@@ -1,0 +1,57 @@
+[
+   {
+      "name_en":"Medical research",
+      "name_fr":"Recherche médicale",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+      "name_en":"Biology (fond.)",
+      "name_fr":"Biologie fondamentale",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+	  "name_en":"Physical sciences, Astronomy",
+      "name_fr":"Sciences physiques et astronomie",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+      "name_en":"Chemistry",
+	  "name_fr":"Chimie",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+      "name_en":"Social sciences",
+      "name_fr":"Sciences sociales",
+	  "main_domain": "Lettres, sciences Humaines et Sociales"
+   },
+    {
+      "name_en":"Mathematics",
+	  "name_fr":"Mathématiques",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+      "name_en":"Earth, Ecology, Energy and applied biology",
+	  "name_fr":"Sciences de la Terre, écologie, énergie et biologie appliquée",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+      "name_en":"Computer and information sciences",
+	  "name_fr":"Informatique et sciences de l'information",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+      "name_en":"Humanities",
+	  "name_fr":"Sciences humaines",
+	  "main_domain": "Lettres, sciences Humaines et Sociales"
+   },
+    {
+      "name_en":"Engineering",
+	  "name_fr":"Ingénierie",
+	  "main_domain": "Sciences, Technologies, Santé"
+   },
+    {
+      "name_en":"unknown",
+	  "name_fr":"Inconnu",
+	  "main_domain": "Inconnu"
+   }
+]
