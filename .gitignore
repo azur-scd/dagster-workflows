@@ -1,7 +1,8 @@
-# Ignore virtual env folder#
+# Ignore virtual env and tmp folder#
 ###################
 **/*venv*/**
 **/*__pycache__*/**
+**/*tmp*/**
 
 # Ignore harvest temp and heavy ml files#
 ###################
@@ -10,7 +11,7 @@ app/bso_theses/01_raw/*
 !app/bso_theses/01_raw/.gitkeep
 app/bso_publis_scopus/05_model_input/*
 !app/bso_publis_scopus/05_model_input/.gitkeep
-app/bso_publis_scopus/06_models/*
+app/bso_publis_scopus/06_models/logmodel.*
 !app/bso_publis_scopus/06_models/.gitkeep
 
 # Ignore windows batch files
