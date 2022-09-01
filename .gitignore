@@ -3,10 +3,10 @@
 **/*venv*/**
 **/*__pycache__*/**
 **/*tmp*/**
-
-# Ignore harvest temp and heavy ml files#
-###################
 **/*temp_*/**
+
+# Ignore  huge ml files#
+###################
 app/bso_theses/01_raw/*
 !app/bso_theses/01_raw/.gitkeep
 app/bso_publis_scopus/05_model_input/*
