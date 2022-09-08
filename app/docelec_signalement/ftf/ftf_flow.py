@@ -1,5 +1,5 @@
 import graphlib
-from dagster import job, op, repository, asset, AssetIn, AssetMaterialization, AssetObservation
+from dagster import job, op, repository, asset, AssetIn, AssetMaterialization, AssetObservation, MetadataValue
 import pandas as pd
 import glob
 import os
@@ -48,12 +48,35 @@ def save_tmp(context,df):
 def xsl_process(context):
     return subprocess.run(['/bin/bash',f'{context.op_config["saxon_path"]}/run_saxon.sh',f'{context.op_config["xsl_path"]}/ftf4primo.xsl',f'{context.op_config["intermediate_data_path"]}/ftf_temp.xml',f'{context.op_config["primary_data_path"]}/ftf.xml'])
 
-@job
-def run_workflow():
+@job(
+    metadata={
+        "url_ftf_admin": MetadataValue.url("https://eadmin.ebscohost.com/eadmin/Login.aspx"),
+        "login_ftf_admin": MetadataValue.text("login:S4106903/mdp:Docelec@2021"),
+        "workflow": MetadataValue.text("1. Export FTF admin : holdings management -> Download ; 2. dagster flow ; 4. UTF-8 (sans BOM) -> Double-zipper en .tar.gz ->  /exlibris/aleph/AtoZ_export_2_primo -> Pipe Primo ATOZ_Delete_Reload")
+    }
+)
+def ftf_flow():
     df = clean_dataframe(load_last_ftf_csv_file())
     save_tmp(df)
     xsl_process()
 
 @repository
-def prod_ftf_workflow():
-    return [run_workflow]
+def docelec_signalement():
+    return [ftf_flow]
+
+"""
+Config
+ops:
+  load_last_ftf_csv_file:
+    config:
+      raw_data_path: "docelec_signalement/ftf/01_raw"
+  save_tmp:
+    config:
+      intermediate_data_path: "docelec_signalement/ftf/02_intermediate" 
+  xsl_process:
+    config:
+      saxon_path: "docelec_signalement"
+      xsl_path: "docelec_signalement/ftf"
+      intermediate_data_path: "docelec_signalement/ftf/02_intermediate"
+      primary_data_path: "docelec_signalement/ftf/03_primary"
+"""

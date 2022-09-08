@@ -1,7 +1,7 @@
 load_from:
-  - python_file:
-      relative_path: flow_de_test/repository.py
-      working_directory: flow_de_test/
+#  - python_file:
+#      relative_path: flow_de_test/repository.py
+#      working_directory: flow_de_test/
   - python_file:
       relative_path: docelec_signalement/ftf/ftf_flow.py
       working_directory: docelec_signalement/ftf/
@@ -9,9 +9,21 @@ load_from:
       relative_path: docelec_signalement/cyberlibris/cyberlibris_flow.py
       working_directory: docelec_signalement/cyberlibris
   - python_file:
-      relative_path: bso_theses/bso_theses_flow.py
+      relative_path: docelec_signalement/biblioondemand/bod_flow.py
+      working_directory: docelec_signalement/biblioondemand
+  - python_file:
+      relative_path: bso_theses/1_bso_theses.py
       working_directory: bso_theses
   - python_file:
-      relative_path: bso_publis_scopus/bso_publis_scopus_flow.py
+      relative_path: bso_publis_scopus/0_test.py
+      working_directory: bso_publis_scopus
+  - python_file:
+      relative_path: bso_publis_scopus/1_core_unpaywall.py
+      working_directory: bso_publis_scopus
+  - python_file:
+      relative_path: bso_publis_scopus/2_add_ml_classification.py
+      working_directory: bso_publis_scopus
+  - python_file:
+      relative_path: bso_publis_scopus/3_add_crossref_dissemin.py
       working_directory: bso_publis_scopus
   

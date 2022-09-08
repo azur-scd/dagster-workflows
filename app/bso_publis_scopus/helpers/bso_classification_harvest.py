@@ -13,7 +13,7 @@ from nltk.stem import WordNetLemmatizer
 stop_en = set(stopwords.words('english')) 
 
 def to_lower(row,col):
-    return str.lower(row[f'{col}_s']).strip()
+    return str.lower(row[f'{col}']).strip()
 
 tokenizer = RegexpTokenizer(r'\w+')
 def tokenize(row,col):
@@ -34,6 +34,14 @@ def text_process(df,col):
     df[f'{col}_cleaned'] = df.apply(lambda row: list_to_string(row,col), axis=1)
     return df
 
-def to_bso_class_with_ml(row,bso_classes,model):
-    predicted_class = model([row["features_union_titre_journal"]]) 
+def nlp_transform(df):
+    for i in ['title','journal_name','publisher']:
+        df[i] = df[i].str.replace('\d+', '')
+        df = text_process(df,i)
+    return df
+
+def to_bso_class_with_ml(row,nlp_model,ml_model):
+    bso_classes = {0: 'Biology (fond.)', 1: 'Chemistry', 2: 'Computer and \n information sciences', 3: 'Earth, Ecology, \nEnergy and applied biology', 4: 'Engineering',5: 'Humanities', 6: 'Mathematics', 7: 'Medical research', 8: 'Physical sciences, Astronomy', 9: 'Social sciences'} 
+    input_text = nlp_model.transform([row])
+    predicted_class = ml_model.predict(input_text) 
     return bso_classes[predicted_class[0]]

@@ -53,7 +53,7 @@
       "HAL":"",
       "id":4,
       "parent_id":1,
-      "documents_count":7474
+      "documents_count":4116
    },
    {
       "affiliation_name":"Institut de Pharmacologie Moléculaire et Cellulaire",
@@ -67,7 +67,7 @@
       "HAL":"199361",
       "id":5,
       "parent_id":1,
-      "documents_count":1710
+      "documents_count":622
    },
    {
       "affiliation_name":"Centre de Recherche sur l'Hétéro-Epitaxie et ses Applications",
@@ -81,7 +81,7 @@
       "HAL":"409",
       "id":6,
       "parent_id":1,
-      "documents_count":1071
+      "documents_count":343
    },
    {
       "affiliation_name":"Observatoire de la Côte d'Azur",
@@ -95,7 +95,7 @@
       "HAL":"",
       "id":7,
       "parent_id":2,
-      "documents_count":673
+      "documents_count":377
    },
    {
       "affiliation_name":"Le Laboratoire Géoazur",
@@ -109,7 +109,7 @@
       "HAL":"",
       "id":8,
       "parent_id":2,
-      "documents_count":1554
+      "documents_count":825
    },
    {
       "affiliation_name":"Étude des Structures et des Processus d’Adaptation et des Changements de l’Espace",
@@ -123,7 +123,7 @@
       "HAL":"87217",
       "id":9,
       "parent_id":1,
-      "documents_count":205
+      "documents_count":117
    },
    {
       "affiliation_name":"Laboratoire Souterrain à Bas Bruit",
@@ -137,7 +137,7 @@
       "HAL":"",
       "id":10,
       "parent_id":1,
-      "documents_count":33
+      "documents_count":20
    },
    {
       "affiliation_name":"Laboratoire de Mathématiques J.A. Dieudonné",
@@ -151,7 +151,7 @@
       "HAL":"199970",
       "id":11,
       "parent_id":1,
-      "documents_count":1338
+      "documents_count":1104
    },
    {
       "affiliation_name":"Cognition Behaviour Technology",
@@ -165,7 +165,7 @@
       "HAL":"168629",
       "id":12,
       "parent_id":1,
-      "documents_count":430
+      "documents_count":175
    },
    {
       "affiliation_name":"Transporteurs en Imagerie et Radiothérapie en Oncologie",
@@ -179,7 +179,7 @@
       "HAL":"238190",
       "id":13,
       "parent_id":1,
-      "documents_count":217
+      "documents_count":88
    },
    {
       "affiliation_name":"Microbiologie Orale, Immunothérapie et Santé",
@@ -193,7 +193,7 @@
       "HAL":"450080",
       "id":14,
       "parent_id":1,
-      "documents_count":190
+      "documents_count":76
    },
    {
       "affiliation_name":"Centre Méditerranéen de Médecine Moléculaire",
@@ -207,7 +207,7 @@
       "HAL":"180122",
       "id":15,
       "parent_id":1,
-      "documents_count":2267
+      "documents_count":935
    },
    {
       "affiliation_name":"Institut de Recherche sur le Cancer et le Vieillissement, Nice",
@@ -221,7 +221,7 @@
       "HAL":"182186",
       "id":16,
       "parent_id":1,
-      "documents_count":1677
+      "documents_count":698
    },
    {
       "affiliation_name":"Centre de Recherches en Histoires des Idées",
@@ -235,7 +235,7 @@
       "HAL":"1723",
       "id":17,
       "parent_id":1,
-      "documents_count":5
+      "documents_count":6
    },
    {
       "affiliation_name":"Unité de Recherche Migrations et Société",
@@ -249,7 +249,7 @@
       "HAL":"1004973",
       "id":18,
       "parent_id":1,
-      "documents_count":48
+      "documents_count":42
    },
    {
       "affiliation_name":"Groupe de Recherche en Droit, Économie et Gestion",
@@ -263,7 +263,7 @@
       "HAL":"185786",
       "id":19,
       "parent_id":1,
-      "documents_count":531
+      "documents_count":452
    },
    {
       "affiliation_name":"Laboratoire Interdisciplinaire Récits, Cultures et Sociétés",
@@ -277,7 +277,7 @@
       "HAL":"227789",
       "id":20,
       "parent_id":1,
-      "documents_count":18
+      "documents_count":17
    },
    {
       "affiliation_name":"Centre Transdisciplinaire D'épistémologie de la Littérature et des Arts Vivants",
@@ -291,7 +291,7 @@
       "HAL":"424925",
       "id":21,
       "parent_id":1,
-      "documents_count":4
+      "documents_count":3
    },
    {
       "affiliation_name":"Information Milieux, Médias, Médiations",
@@ -305,7 +305,7 @@
       "HAL":"",
       "id":22,
       "parent_id":1,
-      "documents_count":2
+      "documents_count":3
    },
    {
       "affiliation_name":"Laboratoire d'Anthropologie et de Psychologie Cliniques, Cognitives et Sociales",
@@ -319,7 +319,7 @@
       "HAL":"530129",
       "id":23,
       "parent_id":1,
-      "documents_count":158
+      "documents_count":123
    },
    {
       "affiliation_name":"Laboratoire Motricité Humaine Expertise Sport Santé",
@@ -333,7 +333,7 @@
       "HAL":"54697",
       "id":24,
       "parent_id":1,
-      "documents_count":624
+      "documents_count":388
    },
    {
       "affiliation_name":"Centre de la Méditerranée Moderne et Contemporaine",
@@ -347,7 +347,7 @@
       "HAL":"30708",
       "id":25,
       "parent_id":1,
-      "documents_count":13
+      "documents_count":12
    },
    {
       "affiliation_name":"Institut Sophia Agrobiotech - (ISA)",
@@ -361,7 +361,7 @@
       "HAL":"1002392",
       "id":26,
       "parent_id":1,
-      "documents_count":1301
+      "documents_count":627
    },
    {
       "affiliation_name":"Equipe de Recherche sur les Mutations de I'Europe et de ses Sociétés",
@@ -389,7 +389,7 @@
       "HAL":"",
       "id":28,
       "parent_id":1,
-      "documents_count":342
+      "documents_count":164
    },
    {
       "affiliation_name":"Laboratoire D'informatique Signaux et Systèmes de Sophia-Antipolis",
@@ -403,7 +403,7 @@
       "HAL":"",
       "id":29,
       "parent_id":1,
-      "documents_count":1836
+      "documents_count":998
    },
    {
       "affiliation_name":"Groupe de Recherche en Management",
@@ -417,7 +417,7 @@
       "HAL":"520677",
       "id":30,
       "parent_id":1,
-      "documents_count":57
+      "documents_count":51
    },
    {
       "affiliation_name":"Institut de Physique de Nice",
@@ -431,7 +431,7 @@
       "HAL":"497162",
       "id":31,
       "parent_id":1,
-      "documents_count":2006
+      "documents_count":864
    },
    {
       "affiliation_name":"Laboratoire Polytech'LAB",
@@ -445,7 +445,7 @@
       "HAL":"537646",
       "id":32,
       "parent_id":1,
-      "documents_count":220
+      "documents_count":142
    },
    {
       "affiliation_name":"Astrophysique Relativiste, Théories, Expériences, Metrologie, Instrumentation, Signaux",
@@ -459,7 +459,7 @@
       "HAL":"",
       "id":33,
       "parent_id":2,
-      "documents_count":2632
+      "documents_count":283
    },
    {
       "affiliation_name":"Laboratoire Joseph-Louis Lagrange",
@@ -473,7 +473,7 @@
       "HAL":"",
       "id":34,
       "parent_id":2,
-      "documents_count":3270
+      "documents_count":1628
    },
    {
       "affiliation_name":"Laboratoire D'électronique, Antennes et Télécommunications",
@@ -487,7 +487,7 @@
       "HAL":"193834",
       "id":35,
       "parent_id":1,
-      "documents_count":612
+      "documents_count":256
    },
    {
       "affiliation_name":"Institut de Biologie Valrose",
@@ -501,7 +501,7 @@
       "HAL":"182201",
       "id":36,
       "parent_id":1,
-      "documents_count":1297
+      "documents_count":575
    },
    {
       "affiliation_name":"Centre Commun de Microscopie Appliquée",
@@ -515,7 +515,7 @@
       "HAL":"",
       "id":37,
       "parent_id":1,
-      "documents_count":102
+      "documents_count":94
    },
    {
       "affiliation_name":"Laboratoire de Physiomédecine Moléulaire",
@@ -529,7 +529,7 @@
       "HAL":"201743",
       "id":38,
       "parent_id":1,
-      "documents_count":226
+      "documents_count":113
    },
    {
       "affiliation_name":"Bases, Corpus et Langage",
@@ -543,7 +543,7 @@
       "HAL":"60110762",
       "id":39,
       "parent_id":1,
-      "documents_count":127
+      "documents_count":93
    },
    {
       "affiliation_name":"Institut de Chimie de Nice",
@@ -557,7 +557,7 @@
       "HAL":"212876",
       "id":40,
       "parent_id":1,
-      "documents_count":1232
+      "documents_count":546
    },
    {
       "affiliation_name":"Cultures et Envirronements, Préhistoire, Antiquité, Moyen-Age",
@@ -571,7 +571,7 @@
       "HAL":"199355",
       "id":41,
       "parent_id":1,
-      "documents_count":369
+      "documents_count":209
    },
    {
       "affiliation_name":"Unite de Pharmacogenetique et Radiogenetique des Cancers",
@@ -585,7 +585,7 @@
       "HAL":"",
       "id":42,
       "parent_id":1,
-      "documents_count":21
+      "documents_count":19
    },
    {
       "affiliation_name":"Villa Arson",
@@ -613,7 +613,7 @@
       "HAL":"",
       "id":44,
       "parent_id":1,
-      "documents_count":211
+      "documents_count":74
    },
    {
       "affiliation_name":"Laboratoire d'Innovation et Numérique pour l'Éducation (#fabLINE)",
@@ -627,7 +627,7 @@
       "HAL":"",
       "id":45,
       "parent_id":1,
-      "documents_count":36
+      "documents_count":17
    },
    {
       "affiliation_name":"EpoC",
@@ -641,7 +641,7 @@
       "HAL":"",
       "id":46,
       "parent_id":1,
-      "documents_count":52
+      "documents_count":21
    },
    {
       "affiliation_name":"Center of Modeling, Simulation, and Interactions",
@@ -683,7 +683,7 @@
       "HAL":"1090027",
       "id":50,
       "parent_id":1,
-      "documents_count":0
+      "documents_count":11
    },
    {
       "affiliation_name":"Unité de Recherche Clinique de la Côte d’Azur, URRIS UR2CA",
@@ -696,6 +696,34 @@
       "BNF":"",
       "HAL":"1048785",
       "id":51,
+      "parent_id":1,
+      "documents_count":34
+   },
+   {
+      "affiliation_name":"Laboratoire RETINES",
+      "affiliation_id":"temp_008",
+      "ppn_valide":"",
+      "affcourt_valide":"",
+      "RNSR":"",
+      "VIAF":"",
+      "ISNI":"",
+      "BNF":"",
+      "HAL":"1005904",
+      "id":52,
+      "parent_id":1,
+      "documents_count":0
+   },
+   {
+      "affiliation_name":"MajuLab",
+      "affiliation_id":"temp_009",
+      "ppn_valide":"",
+      "affcourt_valide":"",
+      "RNSR":"",
+      "VIAF":"",
+      "ISNI":"",
+      "BNF":"",
+      "HAL":"1055092",
+      "id":53,
       "parent_id":1,
       "documents_count":0
    },
@@ -711,6 +739,6 @@
       "HAL":"",
       "id":49,
       "parent_id":1,
-      "documents_count":10
+      "documents_count":6
    }
 ]
