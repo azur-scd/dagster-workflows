@@ -1,5 +1,5 @@
 import graphlib
-from dagster import job, op, graph, repository, asset, AssetIn, AssetMaterialization, AssetObservation, Out, In, String
+from dagster import job, op, graph, repository, asset, AssetIn, AssetMaterialization, AssetObservation, Out, In, String, MetadataValue
 import pandas as pd
 import numpy as np
 import requests
@@ -29,7 +29,7 @@ def create_data_observation_subfolders(context):
             if i == "primary_data_path":
                 os.mkdir(f'{context.op_config["primary_data_path"]}/{context.op_config["observation_date"]}/publis_non_traitees')
 
-@asset(config_schema={"raw_data_path": str, "observation_date": str})
+@asset(config_schema={"raw_data_path": str, "primary_data_path": str, "observation_date": str})
 def extract_data_source(context):
     df = pd.read_json(f'{context.op_config["raw_data_path"]}/{context.op_config["observation_date"]}/exportDonnees_barometre_complet_{context.op_config["observation_date"]}.json')
     context.log_event(
@@ -45,6 +45,14 @@ def extract_data_source(context):
     df_authors = df.groupby('source_id')['author_name'].apply(list).reset_index(name='all_authors')
     df_authors['all_authors'] = df_authors["all_authors"].apply('|'.join)
     df_reference_data = pd.merge(df,df_authors, left_on='source_id', right_on='source_id')
+    # archive publis sans doi non traitées
+    df_reference_data_sans_doi = df_reference_data[df_reference_data["doi"].isna()]
+    df_reference_data_sans_doi.to_csv(f'{context.op_config["primary_data_path"]}/{context.op_config["observation_date"]}/publis_non_traitees/source_data_scopus_sans_doi.csv',index = False,encoding='utf8')
+    context.log_event(
+        AssetObservation(asset_key="df_reference_data_sans_doi", metadata={
+            "text_metadata": 'Shape of the number of publis without doi from initial JP dataset',
+            "size": f"{df_reference_data_sans_doi.shape[0]/df_reference_data.shape[0]*100}%"})
+    )
     return df_reference_data
 
 @asset(config_schema={"primary_data_path": str})
@@ -143,7 +151,11 @@ def merge_upw_data(context,publis_uniques_doi_data,publishers_doi_prefix,unpaywa
         )
     return publis_uniques_doi_oa_data
 
-@job
+@job(
+    metadata={
+        "notes": MetadataValue.text("Le fichier 08_reporting/DATE/publis_all_with_affiliations_data.csv contient touets les publis avec ou sans DOI")
+    }
+)
 def core_unpaywall():
     #configs
     create_temp_subfolders()
