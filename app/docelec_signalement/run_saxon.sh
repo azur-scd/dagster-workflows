@@ -8,4 +8,4 @@
 # USAGE:
 # bash run_saxon.sh stylesheet.xsl source.xml output.xml
 
-java -jar "/app/saxon-he-9.4.0.7.jar" -xsl:$1 -s:$2 -o:$3
+java -jar "/opt/dagster/app/saxon-he-9.4.0.7.jar" -xsl:$1 -s:$2 -o:$3

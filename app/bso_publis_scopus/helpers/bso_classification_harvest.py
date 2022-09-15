@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
+import re
 import nltk
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk import bigrams
 from nltk.tokenize import RegexpTokenizer
@@ -11,37 +13,24 @@ from nltk.stem import WordNetLemmatizer
 
 # NLP Functions
 stop_en = set(stopwords.words('english')) 
+stop_fr = set(stopwords.words('french') + ['journal','review'])
 
-def to_lower(row,col):
-    return str.lower(row[f'{col}']).strip()
+def remove_stopwords_fr(s):
+    retained_words = [word for word in s.split() if word not in (stop_fr)]
+    return ' '.join(retained_words)
 
-tokenizer = RegexpTokenizer(r'\w+')
-def tokenize(row,col):
-    return [token for token in tokenizer.tokenize(row[f'{col}_lower_stop_words'].strip()) if ((token != u"") & (len(token)>2))]
+def remove_special_characters(s):
+    pattern = r'[^a-zA-Z]'
+    text = re.sub(pattern, ' ', s)
+    return text
 
-lemmatizer = WordNetLemmatizer()
-def lemmatize(row,col):
-    return [lemmatizer.lemmatize(word) for word in row[f'{col}_lower_stop_words_token']]
+def lemmatize(r):
+    lemmatizer = WordNetLemmatizer()
+    words = nltk.word_tokenize(r)
+    lemmatized_words = [lemmatizer.lemmatize(word) for word in words]
+    return " ".join(lemmatized_words)
 
-def list_to_string(row,col):
-    return " ".join([s for s in row[f'{col}_lower_stop_words_token_lemme']])
-
-def text_process(df,col):
-    df[f"{col}_lower"] = df.apply(lambda row: to_lower(row,col),axis=1)
-    df[f'{col}_lower_stop_words'] = df[f'{col}_lower'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_en)]))
-    df[f'{col}_lower_stop_words_token'] = df.apply(lambda row: tokenize(row,col),axis=1)
-    df[f'{col}_lower_stop_words_token_lemme'] = df.apply(lambda row: lemmatize(row,col),axis=1)
-    df[f'{col}_cleaned'] = df.apply(lambda row: list_to_string(row,col), axis=1)
-    return df
-
-def nlp_transform(df):
-    for i in ['title','journal_name','publisher']:
-        df[i] = df[i].str.replace('\d+', '')
-        df = text_process(df,i)
-    return df
-
-def to_bso_class_with_ml(row,nlp_model,ml_model):
+def to_bso_class_with_ml(row,ml_model):
     bso_classes = {0: 'Biology (fond.)', 1: 'Chemistry', 2: 'Computer and \n information sciences', 3: 'Earth, Ecology, \nEnergy and applied biology', 4: 'Engineering',5: 'Humanities', 6: 'Mathematics', 7: 'Medical research', 8: 'Physical sciences, Astronomy', 9: 'Social sciences'} 
-    input_text = nlp_model.transform([row])
-    predicted_class = ml_model.predict(input_text) 
+    predicted_class = ml_model.predict([[row]])
     return bso_classes[predicted_class[0]]

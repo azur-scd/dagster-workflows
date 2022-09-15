@@ -1,28 +1,33 @@
-# Ignore virtual env and tmp folder#
+# Ignore virtual env & tmp folder & # dagster_home folders
 ###################
 **/*venv*/**
 **/*__pycache__*/**
 **/*tmp*/**
 **/*temp_*/**
 app/tmp*/
+dagster_home/**
 
-# Ignore  huge ml files#
+# Ignore  huge & intermediate & ml files#
 ###################
-app/bso_theses/01_raw/*
+app/bso_theses/01_raw/**
 !app/bso_theses/01_raw/.gitkeep
-app/bso_publis_scopus/05_model_input/*
+app/bso_theses/02_intermediate/**/**
+!app/bso_theses/02_intermediate/.gitkeep
+app/bso_publis_scopus/**/01_raw/**
+!app/bso_publis_scopus/01_raw/.gitkeep
+app/bso_publis_scopus/05_model_input/**
 !app/bso_publis_scopus/05_model_input/.gitkeep
 app/bso_publis_scopus/06_models/logmodel.*
 !app/bso_publis_scopus/06_models/.gitkeep
 
-# Ignore publishers docelec files
+# Ignore docelec files
 ###################
-app/docelec_signalement/**/01_raw/*
+app/docelec_signalement/**/01_raw/**
 !app/ocelec_signalement/**/01_raw/.gitkeep
-app/docelec_signalement/**/02_intermediate/*
-!app/ocelec_signalement/**/02_intermediate/.gitkeep
-app/docelec_signalement/**/03_primary/*
-!app/ocelec_signalement/**/03_primary/.gitkeep
+app/docelec_signalement/**/02_intermediate/**
+!app/docelec_signalement/**/02_intermediate/.gitkeep
+app/docelec_signalement/**/03_primary/**
+!app/docelec_signalement/**/03_primary/.gitkeep
 
 # Ignore windows batch files
 ###################

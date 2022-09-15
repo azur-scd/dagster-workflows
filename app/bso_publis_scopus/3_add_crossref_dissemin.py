@@ -8,7 +8,7 @@ import helpers.dissemin_harvest as dsm
 
 @asset(config_schema={"model_output_data_path": str, "observation_date": str})
 def get_publis_uniques_doi_oa_data_with_bsoclasses(context):
-    publis_uniques_doi_oa_data_with_bsoclasses = pd.read_csv(f'{context.op_config["model_output_data_path"]}/{context.op_config["observation_date"]}/publis_uniques_doi_oa_data.csv', sep=",", encoding="utf-8")
+    publis_uniques_doi_oa_data_with_bsoclasses = pd.read_csv(f'{context.op_config["model_output_data_path"]}/{context.op_config["observation_date"]}/publis_uniques_doi_oa_data_with_bsoclasses.csv', sep=",", encoding="utf-8")
     return publis_uniques_doi_oa_data_with_bsoclasses
 
 @asset(config_schema={"intermediate_data_path": str})
@@ -41,13 +41,13 @@ def get_dissemin_data(context,publis_uniques_doi_oa_data_with_bsoclasses):
     dissemin_data.to_csv(f'{context.op_config["intermediate_data_path"]}/dissemin_data.csv',index = False,encoding='utf8')
     return dissemin_data
 
-@asset(config_schema={"model_output_data_path": str, "observation_date": str})
+@asset(config_schema={"reporting_data_path": str, "observation_date": str})
 def merge_data(context,publis_uniques_doi_oa_data_with_bsoclasses,crossref_data, dissemin_data):
     # crossref data
     publis_uniques_doi_oa_data_with_bsoclasses_complete = publis_uniques_doi_oa_data_with_bsoclasses.merge(crossref_data, left_on='doi', right_on='source_doi',how='left').drop(columns=['source_doi','published-online-date','journal-published-print-date','published-print-date'])
     # dissemin data
     publis_uniques_doi_oa_data_with_bsoclasses_complete = pd.merge(publis_uniques_doi_oa_data_with_bsoclasses_complete,dissemin_data, left_on='doi', right_on='source_doi',how="left").drop(columns=['source_doi'])
-    publis_uniques_doi_oa_data_with_bsoclasses_complete.to_csv(f'{context.op_config["model_output_data_path"]}/{context.op_config["observation_date"]}/publis_uniques_doi_oa_data_with_bsoclasses_complete.csv', index= False,encoding='utf8')
+    publis_uniques_doi_oa_data_with_bsoclasses_complete.to_csv(f'{context.op_config["reporting_data_path"]}/{context.op_config["observation_date"]}/publis_uniques_doi_oa_data_with_bsoclasses_complete.csv', index= False,encoding='utf8')
     context.log_event(
         AssetObservation(asset_key="shape_final_dataset", metadata={
             "text_metadata": 'Number of unique publis with doi and oa metadata',
@@ -56,7 +56,7 @@ def merge_data(context,publis_uniques_doi_oa_data_with_bsoclasses,crossref_data,
     return publis_uniques_doi_oa_data_with_bsoclasses_complete
 
 @job
-def add_crossref_dissemein():
+def add_crossref_dissemin():
     #configs
     publis_uniques_doi_oa_data_with_bsoclasses =get_publis_uniques_doi_oa_data_with_bsoclasses()
     crossref_data = get_crossref_data(publis_uniques_doi_oa_data_with_bsoclasses)
@@ -66,7 +66,7 @@ def add_crossref_dissemein():
 
 @repository
 def prod_bso_publis_scopus():
-    return [add_crossref_dissemein]
+    return [add_crossref_dissemin]
 
 """
 Config
@@ -83,7 +83,7 @@ ops:
       intermediate_data_path: bso_publis_scopus/02_intermediate
   merge_data:
     config:
-      model_output_data_path: bso_publis_scopus/07_model_output
+      reporting_data_path: bso_publis_scopus/08_reporting
       observation_date: 2022-08-29
 """
 

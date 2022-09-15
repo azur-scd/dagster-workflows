@@ -12,7 +12,7 @@ def load_last_bod_xml_file(context):
     context.log_event(
         AssetObservation(asset_key="last_bod_filename", metadata={
             "text_metadata": "Name of the latest cyberlibris archived file",
-            "size": f"nb lignes {latest_filename}"})
+            "size": f"{latest_filename}"})
     )
     context.log.info(latest_filename)
     return latest_filename
@@ -25,7 +25,7 @@ def xsl_process(context, filename):
     metadata={
         "url_bod_admin": MetadataValue.url("https://univ-cotedazur.biblioondemand.com/"),
         "login_bod_admin": MetadataValue.text("login:ggeoffroy/mdp:ggeoffroy"),
-        "workflow": MetadataValue.text("1. Export BOD admin : accès professionnel -> Mes acquisitions -> Titres acquis -> Export ISO-2709 ; 2. Conversion Unimarc ISO 2709 séquentiel .mrc en Unimarc xml avec le module MarcTools de MarcEditor ; 3. dagster flow ; 4. UTF-8 (sans BOM) -> Double-zipper en .tar.gz ->  /exlibris/aleph/aleph_export_2_primo/Numilog_export_2_primo -> Pipe Primo Numilog_Delete_Reload (modifier la date)")
+        "workflow": MetadataValue.text("1. Export BOD admin : accès professionnel -> Mes acquisitions -> Titres acquis -> Export ISO-2709 ; 2. Conversion Unimarc ISO 2709 séquentiel .mrc en Unimarc xml avec le module MarcTools de MarcEditor ; 3. dagster flow ; 4. UTF-8 (sans BOM) -> Double-zipper en .tar.gz ->  /exlibris/aleph/aleph_export_2_primo/Numilog_export_2_primo (supprimer le fichier précédent) -> Pipe Primo Numilog_Delete_Reload (modifier la date)")
     }
 )
 def bod_flow():
@@ -44,7 +44,7 @@ ops:
   xsl_process:
     config:
       saxon_path: "docelec_signalement"
-      xsl_path: "docelec_signalement/cyberlibris"
-      raw_data_path: "docelec_signalement/biblioondemands/01_raw"
+      xsl_path: "docelec_signalement/biblioondemand"
+      raw_data_path: "docelec_signalement/biblioondemand/01_raw"
       primary_data_path: "docelec_signalement/biblioondemand/03_primary"
 """

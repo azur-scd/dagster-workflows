@@ -20,9 +20,9 @@ def create_temp_subfolders(context):
         if not os.path.exists(f'{context.op_config["intermediate_data_path"]}/temp_{i}'):
             os.mkdir(f'{context.op_config["intermediate_data_path"]}/temp_{i}')  
 
-@op(config_schema={"primary_data_path": str, "model_output_data_path": str, "observation_date": str})
+@op(config_schema={"primary_data_path": str, "model_output_data_path": str, "reporting_data_path": str,"observation_date": str})
 def create_data_observation_subfolders(context):
-    concerned_folders = ["primary_data_path","model_output_data_path"]
+    concerned_folders = ["primary_data_path","model_output_data_path","reporting_data_path"]
     for i in concerned_folders:
         if not os.path.exists(f'{context.op_config[i]}/{context.op_config["observation_date"]}'):
             os.mkdir(f'{context.op_config[i]}/{context.op_config["observation_date"]}')
@@ -72,7 +72,7 @@ def update_referentiel_data(context,df_reference_data):
         )
     return df_affiliations
 
-@asset(config_schema={"primary_data_path": str, "observation_date": str})
+@asset(config_schema={"reporting_data_path": str, "observation_date": str})
 def get_publis_all_with_affiliations_data(context,df_reference_data,df_affiliations):
     # merge all publis with affiliations
     df_affiliations["affiliation_id"] = df_affiliations["affiliation_id"].astype('str')
@@ -81,7 +81,7 @@ def get_publis_all_with_affiliations_data(context,df_reference_data,df_affiliati
     publis_all_with_affiliations_data = publis_all_with_affiliations_data.rename(columns={'id': 'aff_internal_id', 'parent_id': 'aff_parent_id'})
     # identify corresponding author if UCA
     publis_all_with_affiliations_data["corresponding"] = publis_all_with_affiliations_data[publis_all_with_affiliations_data["corresponding_author"] == "oui"].apply (lambda row: fn.keep_duplicate(row), axis=1)
-    publis_all_with_affiliations_data.to_csv(f'{context.op_config["primary_data_path"]}/{context.op_config["observation_date"]}/publis_all_with_affiliations_data.csv',index = False,encoding='utf8')
+    publis_all_with_affiliations_data.to_csv(f'{context.op_config["reporting_data_path"]}/{context.op_config["observation_date"]}/publis_all_with_affiliations_data.csv',index = False,encoding='utf8')
     return publis_all_with_affiliations_data
 
 @asset(config_schema={"intermediate_data_path": str, "corpus_end_year": int})
@@ -170,6 +170,7 @@ ops:
       model_output_data_path: bso_publis_scopus/07_model_output
       observation_date: 2022-08-29
       primary_data_path: bso_publis_scopus/03_primary
+      reporting_data_path: bso_publis_scopus/08_reporting
   create_temp_subfolders:
     config:
       intermediate_data_path: bso_publis_scopus/02_intermediate
@@ -180,7 +181,7 @@ ops:
   get_publis_all_with_affiliations_data:
     config:
       observation_date: 2022-08-29
-      primary_data_path: bso_publis_scopus/03_primary
+      reporting_data_path: bso_publis_scopus/08_reporting
   get_publis_uniques_doi_data:
     config:
       corpus_end_year: 2022

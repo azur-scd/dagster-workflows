@@ -15,7 +15,7 @@ load_from:
       relative_path: bso_theses/1_bso_theses.py
       working_directory: bso_theses
   - python_file:
-      relative_path: bso_publis_scopus/0_test.py
+      relative_path: bso_publis_scopus/0_dev.py
       working_directory: bso_publis_scopus
   - python_file:
       relative_path: bso_publis_scopus/1_core_unpaywall.py
