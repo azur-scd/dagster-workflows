@@ -86,7 +86,7 @@ def process_classification(context,mesri_bso_dataset,publis_uniques_doi_oa_data,
 
 @asset(config_schema={"primary_data_path": str})
 def complete_classification_labels(context,temp):
-    df_classification_mapping = pd.read_json(f'{context.op_config["primary_data_path"]}/classification_mapping.json')
+    df_classification_mapping = pd.read_json(f'{context.op_config["primary_data_path"]}/bso_classification_mapping.json')
     temp_mapped=pd.merge(temp,df_classification_mapping, left_on='bso_classification', right_on='name_en',how="left").drop(columns=['name_en']).rename(columns={"name_fr": "bso_classification_fr"})
     return temp_mapped
 
