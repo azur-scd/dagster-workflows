@@ -8,8 +8,8 @@ dagster_home/
 
 # Ignore  huge & intermediate & ml files#
 ###################
-**/01_raw/*
-!**/01_raw/.gitkeep
+**/01_raw/**/**
+!**/01_raw/**/.gitkeep
 app/bso_theses/01_raw/**
 !app/bso_theses/01_raw/.gitkeep
 app/bso_theses/02_intermediate/**/**
