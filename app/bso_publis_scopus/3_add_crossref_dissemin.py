@@ -47,7 +47,7 @@ def merge_data(context,publis_uniques_doi_oa_data_with_bsoclasses,crossref_data,
     publis_uniques_doi_oa_data_with_bsoclasses_complete = publis_uniques_doi_oa_data_with_bsoclasses.merge(crossref_data, left_on='doi', right_on='source_doi',how='left').drop(columns=['source_doi','published-online-date','journal-published-print-date','published-print-date'])
     # dissemin data
     publis_uniques_doi_oa_data_with_bsoclasses_complete = pd.merge(publis_uniques_doi_oa_data_with_bsoclasses_complete,dissemin_data, left_on='doi', right_on='source_doi',how="left").drop(columns=['source_doi'])
-    publis_uniques_doi_oa_data_with_bsoclasses_complete.to_csv(f'{context.op_config["reporting_data_path"]}/{context.op_config["observation_date"]}/publis_uniques_doi_oa_data_with_bsoclasses_complete.csv', index= False,encoding='utf8')
+    publis_uniques_doi_oa_data_with_bsoclasses_complete.to_csv(f'{context.op_config["reporting_data_path"]}/{context.op_config["observation_date"]}/open_access/publis_uniques_doi_oa_data_with_bsoclasses_complete.csv', index= False,encoding='utf8')
     context.log_event(
         AssetObservation(asset_key="shape_final_dataset", metadata={
             "text_metadata": 'Number of unique publis with doi and oa metadata',

@@ -6,7 +6,7 @@ import requests
 import json
 import glob
 import os
-import helpers.bso_classification_harvest as bso
+import helpers.functions as fn
 import texthero as hero
 import joblib
 import pickle
@@ -32,7 +32,7 @@ def get_logmodel(context):
     return logmodel
 
 """
-bso_classes are defined dierctly in the bso.to_bso_class_with_ml function
+bso_classes are defined dierctly in the fn.to_bso_class_with_ml function
 @op(config_schema={"bso_classes": dict})
 def get_bso_classes(context):
     bso_classes = dict(context.op_config["bso_classes"])
@@ -63,12 +63,12 @@ def process_classification(context,mesri_bso_dataset,publis_uniques_doi_oa_data,
     temp1['cleaned_feature'] = (
             temp1['feature']
             .pipe(hero.clean)
-            .apply(bso.remove_stopwords_fr)
-            .apply(bso.remove_special_characters)
-            .apply(bso.lemmatize)
+            .apply(fn.remove_stopwords_fr)
+            .apply(fn.remove_special_characters)
+            .apply(fn.lemmatize)
     )
     #5ème étape : on applique le modèle et on complète le dataste temp
-    #temp1["bso_classification"] = temp1.apply(lambda row: bso.to_bso_class_with_ml(row["cleaned_feature"],logmodel),axis=1)
+    #temp1["bso_classification"] = temp1.apply(lambda row: fn.to_bso_class_with_ml(row["cleaned_feature"],logmodel),axis=1)
     context.log_event(
         AssetObservation(asset_key="temp1", metadata={
             "text_metadata": 'Vérification intermédiaire',

@@ -3,6 +3,9 @@ load_from:
 #      relative_path: flow_de_test/repository.py
 #      working_directory: flow_de_test/
   - python_file:
+      relative_path: aleph_uniceloader/periodiques_flow.py
+      working_directory: aleph_uniceloader/
+  - python_file:
       relative_path: docelec_signalement/ftf/ftf_flow.py
       working_directory: docelec_signalement/ftf/
   - python_file:
@@ -18,12 +21,15 @@ load_from:
       relative_path: bso_publis_scopus/0_dev.py
       working_directory: bso_publis_scopus
   - python_file:
-      relative_path: bso_publis_scopus/1_core_unpaywall.py
+      relative_path: bso_publis_scopus/1_main_processing.py
       working_directory: bso_publis_scopus
   - python_file:
       relative_path: bso_publis_scopus/2_add_ml_classification.py
       working_directory: bso_publis_scopus
   - python_file:
       relative_path: bso_publis_scopus/3_add_crossref_dissemin.py
+      working_directory: bso_publis_scopus
+  - python_file:
+      relative_path: bso_publis_scopus/4_controle_mention_adresse.py
       working_directory: bso_publis_scopus
   
