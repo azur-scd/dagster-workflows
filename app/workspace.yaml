@@ -6,30 +6,18 @@ load_from:
       relative_path: aleph_uniceloader/periodiques_flow.py
       working_directory: aleph_uniceloader/
   - python_file:
-      relative_path: docelec_signalement/ftf/ftf_flow.py
-      working_directory: docelec_signalement/ftf/
+      relative_path: docelec_signalement/flows.py
+      working_directory: docelec_signalement
   - python_file:
-      relative_path: docelec_signalement/cyberlibris/cyberlibris_flow.py
-      working_directory: docelec_signalement/cyberlibris
-  - python_file:
-      relative_path: docelec_signalement/biblioondemand/bod_flow.py
-      working_directory: docelec_signalement/biblioondemand
-  - python_file:
-      relative_path: bso_theses/1_bso_theses.py
+      relative_path: bso_theses/1_theses_main.py
       working_directory: bso_theses
   - python_file:
-      relative_path: bso_publis_scopus/0_dev.py
+      relative_path: bso_publis_scopus/00_dev.py
       working_directory: bso_publis_scopus
   - python_file:
-      relative_path: bso_publis_scopus/1_main_processing.py
+      relative_path: bso_publis_scopus/1_scopus_main.py
       working_directory: bso_publis_scopus
   - python_file:
-      relative_path: bso_publis_scopus/2_add_ml_classification.py
-      working_directory: bso_publis_scopus
-  - python_file:
-      relative_path: bso_publis_scopus/3_add_crossref_dissemin.py
-      working_directory: bso_publis_scopus
-  - python_file:
-      relative_path: bso_publis_scopus/4_controle_mention_adresse.py
+      relative_path: bso_publis_scopus/2_controle_mention_adresse.py
       working_directory: bso_publis_scopus
   
