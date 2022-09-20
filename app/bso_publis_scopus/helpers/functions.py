@@ -52,11 +52,11 @@ def list2str(l):
 
 # Fuzzy extractor
 def fuzzy_extractone_uca_developpee(l):
-    return max(process.extractOne("universite cote azur",l)[1],process.extractOne("university cote azur",l)[1], process.extractOne("univ cote azur",l)[1],process.extractOne("universite cote 'azur",l)[1],process.extractOne("university cote 'azur",l)[1],process.extractOne("univ cote 'azur",l)[1])
+    return max(process.extractOne("universite cote azur",l)[1],process.extractOne("university cote azur",l)[1], process.extractOne("azur university",l)[1],process.extractOne("univ cote azur",l)[1],process.extractOne("universite cote 'azur",l)[1],process.extractOne("university cote 'azur",l)[1],process.extractOne("univ cote 'azur",l)[1])
 def fuzzy_extractone_uca_sigle(l):
     return process.extractOne("uca",  l)[1]
 def fuzzy_extractone_uns_developpee(l):
-    return max(process.extractOne("universite nice",l)[1],process.extractOne("universite nice sophia",l)[1],process.extractOne("university nice",l)[1],process.extractOne("university nice sophia",l)[1],process.extractOne("univ nice",l)[1])
+    return max(process.extractOne("universite nice",l)[1],process.extractOne("universite nice sophia",l)[1],process.extractOne("university nice",l)[1],process.extractOne("university nice sophia",l)[1],process.extractOne("antipolis university",l)[1],process.extractOne("univ nice",l)[1])
 def fuzzy_extractone_uns_sigle(l):
     return process.extractOne("uns",l)[1]
 
