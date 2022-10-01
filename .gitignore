@@ -11,15 +11,15 @@ dagster_home/
 ###################
 .env
 dagster_postgres.yaml
-docker-compose.yaml
+docker-compose.yml
 
 # Ignore  huge & intermediate & ml files#
 ###################
-*.csv
-*.db
-*.sqlite
-*.xml
-*.json
+/**/*.csv
+/**/*.db
+/**/*.sqlite
+/**/*.xml
+/**/*.json
 
 # Ignore windows batch files
 ###################
