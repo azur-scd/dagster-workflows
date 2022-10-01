@@ -50,7 +50,7 @@ def str2list(s):
 def list2str(l):
     return [','.join(sub) for sub in l]
 
-# Fuzzy extractor
+# Fuzzy extractor v1
 def fuzzy_extractone_uca_developpee(l):
     return max(process.extractOne("universite cote azur",l)[1],process.extractOne("university cote azur",l)[1], process.extractOne("azur university",l)[1],process.extractOne("univ cote azur",l)[1],process.extractOne("universite cote 'azur",l)[1],process.extractOne("university cote 'azur",l)[1],process.extractOne("univ cote 'azur",l)[1])
 def fuzzy_extractone_uca_sigle(l):
@@ -59,6 +59,34 @@ def fuzzy_extractone_uns_developpee(l):
     return max(process.extractOne("universite nice",l)[1],process.extractOne("universite nice sophia",l)[1],process.extractOne("university nice",l)[1],process.extractOne("university nice sophia",l)[1],process.extractOne("antipolis university",l)[1],process.extractOne("univ nice",l)[1])
 def fuzzy_extractone_uns_sigle(l):
     return process.extractOne("uns",l)[1]
+
+# Fuzzy extractor v2
+def fuzzy_uca_developpee(l):
+    l = [s.replace("'","") for s in l]
+    return max(process.extractOne("universite cote azur",l)[1],
+               process.extractOne("university cote azur",l)[1], 
+               process.extractOne("universite azur",l)[1],
+               process.extractOne("cote azur university",l)[1], 
+               fuzz.partial_ratio("univ cote azur",l),
+               process.extractOne("universitcrossed sign cote azur",l)[1],
+               process.extractOne("universitcrossed cote azur",l)[1],
+               process.extractOne("universit x00e9 c x00f4 te x2019 azur",l)[1])
+def fuzzy_uca_sigle(l):
+    return max(process.extractOne("uca",  l)[1],fuzz.partial_ratio("uca",l)) 
+def fuzzy_uns(l):
+    return max(process.extractOne("universite nice",l)[1],
+               process.extractOne("universite nice sophia",l)[1],
+               process.extractOne("nice sophia antipolis",l)[1],
+               process.extractOne("universite sophia antipolis",l)[1],
+               process.extractOne("university nice",l)[1],
+               process.extractOne("university nice sophia",l)[1],
+               process.extractOne("university sophia antipolis",l)[1],
+               process.extractOne("sophia antipolis university",l)[1],
+               process.extractOne("antipolis university",l)[1],
+               process.extractOne("nice university",l)[1],
+               process.extractOne("univ nice",l)[1],
+               fuzz.partial_ratio("univ nice",l),
+               fuzz.partial_ratio("uns",l))
 
 # Regroup function
 def regroup(df,col):

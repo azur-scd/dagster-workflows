@@ -13,6 +13,7 @@ import helpers.functions as fn
 import texthero as hero
 import joblib
 import pickle
+import sqlite3
 
 ########################## 01_CREATE_SUBFOLDERS ################################
 
@@ -92,6 +93,11 @@ def update_referentiel_data(context,df_reference_data):
     return df_affiliations
 
 @asset(required_resource_keys={"config_params"})
+def get_referentiel_structures(context):
+    df = pd.read_json(f'{context.resources.config_params["primary_data_path"]}/referentiel_structures.json')
+    return df
+
+@asset(required_resource_keys={"config_params"})
 def transform_publis_all_with_affiliations_data(context,df_reference_data,df_affiliations):
     # merge all publis with affiliations
     df_affiliations["affiliation_id"] = df_affiliations["affiliation_id"].astype('str')
@@ -101,6 +107,11 @@ def transform_publis_all_with_affiliations_data(context,df_reference_data,df_aff
     # identify corresponding author if UCA
     publis_all_with_affiliations_data["corresponding"] = publis_all_with_affiliations_data[publis_all_with_affiliations_data["corresponding_author"] == "oui"].apply (lambda row: fn.keep_duplicate(row), axis=1)
     publis_all_with_affiliations_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/open_access/publis_all_with_affiliations_data.csv',index = False,encoding='utf8')
+    return publis_all_with_affiliations_data
+
+@asset(required_resource_keys={"config_params"})
+def get_publis_all_with_affiliations_data(context):    
+    publis_all_with_affiliations_data = pd.read_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/open_access/publis_all_with_affiliations_data.csv',sep=",",encoding='utf8')
     return publis_all_with_affiliations_data
 
 @asset(required_resource_keys={"config_params"})
@@ -314,6 +325,40 @@ def merge_data(context,publis_uniques_doi_oa_data_with_bsoclasses,crossref_data,
         )
     return publis_uniques_doi_oa_data_with_bsoclasses_complete
 
+########################## 06_SAVE_SQLITE ################################
+
+@op(required_resource_keys={"config_params"})
+def db_connexion(context):
+    conn = sqlite3.connect(f'{context.resources.config_params["db_path"]}')
+    return conn
+
+@op(required_resource_keys={"config_params"})
+def create_bso_publis_uniques_table(context,df):
+    observation_date = context.resources.config_params['observation_date'].replace("-","")
+    conn = sqlite3.connect(f'{context.resources.config_params["db_path"]}')
+    cur = conn.cursor()
+    cur.execute(f"DROP TABLE IF EXISTS bso_publis_uniques_{observation_date}")
+    cur.execute(f"CREATE TABLE bso_publis_uniques_{observation_date} ({','.join(map(str,df.columns))});")
+    return df.to_sql(f"bso_publis_uniques_{observation_date}", conn, if_exists='append', index=False)
+
+@op(required_resource_keys={"config_params"})
+def create_bso_publis_all_by_affiliation_table(context,df):
+    observation_date = context.resources.config_params['observation_date'].replace("-","")
+    conn = sqlite3.connect(f'{context.resources.config_params["db_path"]}')
+    cur = conn.cursor()
+    cur.execute(f"DROP TABLE IF EXISTS bso_publis_all_by_affiliation_{observation_date}")
+    cur.execute(f"CREATE TABLE bso_publis_all_by_affiliation_{observation_date} ({','.join(map(str,df.columns))});")
+    return df.to_sql(f"bso_publis_all_by_affiliation_{observation_date}", conn, if_exists='append', index=False)
+
+@op(required_resource_keys={"config_params"})
+def create_referentiel_structures_table(context,df):
+    observation_date = context.resources.config_params['observation_date'].replace("-","")
+    conn = sqlite3.connect(f'{context.resources.config_params["db_path"]}')
+    cur = conn.cursor()
+    cur.execute(f"DROP TABLE IF EXISTS referentiel_structures_{observation_date}")
+    cur.execute(f"CREATE TABLE referentiel_structures_{observation_date} ({','.join(map(str,df.columns))});")
+    return df.to_sql(f"referentiel_structures_{observation_date}", conn, if_exists='append', index=False)
+
 ########################## JOBS ################################
 ################################################################
 
@@ -379,21 +424,35 @@ def ml_multiclassification_process():
 )
 def crossref_and_dissemin_data_process():
     #configs
-    publis_uniques_doi_oa_data_with_bsoclasses =get_publis_uniques_doi_oa_data_with_bsoclasses()
+    publis_uniques_doi_oa_data_with_bsoclasses = get_publis_uniques_doi_oa_data_with_bsoclasses()
     crossref_data = get_crossref_data(publis_uniques_doi_oa_data_with_bsoclasses)
     dissemin_data = get_dissemin_data(publis_uniques_doi_oa_data_with_bsoclasses)
     merge_data(publis_uniques_doi_oa_data_with_bsoclasses,crossref_data, dissemin_data)
 
+@job(name="06_sqlite_save_process",
+     resource_defs={"config_params": make_values_resource()},
+     metadata={
+        "notes": MetadataValue.text("")
+    })
+def sqlite_save_process():
+    publis_uniques_doi_oa_data_with_bsoclasses = get_publis_uniques_doi_oa_data_with_bsoclasses()
+    publis_all_with_affiliations_data = get_publis_all_with_affiliations_data()
+    referentiel_structures = get_referentiel_structures()
+    create_bso_publis_uniques_table(publis_uniques_doi_oa_data_with_bsoclasses)
+    create_bso_publis_all_by_affiliation_table(publis_all_with_affiliations_data)
+    create_referentiel_structures_table(referentiel_structures)
+
 
 @repository
 def prod_bso_publis_scopus():
-    return [create_subfolders,main_transform_process,unpaywall_and_publishers_doiprefix_process,ml_multiclassification_process,crossref_and_dissemin_data_process]
+    return [create_subfolders,main_transform_process,unpaywall_and_publishers_doiprefix_process,ml_multiclassification_process,crossref_and_dissemin_data_process,sqlite_save_process]
 
 """
 Config
 resources:
   config_params:
     config:
+      db_path: bso_publis_scopus/09_db/publications.db
       raw_data_path: bso_publis_scopus/01_raw
       intermediate_data_path: bso_publis_scopus/02_intermediate
       primary_data_path: bso_publis_scopus/03_primary
@@ -404,6 +463,7 @@ resources:
       reporting_data_path: bso_publis_scopus/08_reporting
       observation_date: 2022-08-29
       corpus_end_year: 2022
+  
 """
 
 
