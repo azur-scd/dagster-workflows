@@ -5,8 +5,10 @@ import numpy as np
 import glob
 import helpers.functions as fn
 import sqlite3
+from sentence_transformers import SentenceTransformer, util
 
 ########################## 01_MAIN_FUZZY ################################
+ 
 
 @op(required_resource_keys={"config_params"})
 def extract_data_source(context):
@@ -26,25 +28,48 @@ def transform_nlp_data(df):
     return df
 
 @op
-def transform_fuzzy_data_v2(df):
-    df["fuzzy_uca_developpee"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.fuzzy_uca_developpee)
-    df["fuzzy_uca_sigle"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.fuzzy_uca_sigle)
-    df["fuzzy_uns"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.fuzzy_uns)
+def get_fuzzy_data_uca_dvp(df):
+    df["fuzzy_data_uca_dvp"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.process_fuzzy_score_uca_developpee)
+    df["fuzzy_score_uca_dvp"] = df["fuzzy_data_uca_dvp"].apply(lambda x: x[1])
+    df["fuzzy_position_uca_dvp"] = df.apply(lambda x: fn.process_uca_position(x["fuzzy_data_uca_dvp"],x["mentionAffil_reconstruct_subsentence_cleaned"]), axis=1)
     return df
 
 @op
-def normalize_mention_adresse_v2(df):
-    # mention adresse normalisée tous les cas
+def get_fuzzy_score_uca_sigle(df):
+    df["fuzzy_score_uca_sigle"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(lambda x: fn.process_fuzzy_sigle(x," uca "))
+    return df
+
+@op
+def get_fuzzy_data_uns(df):
+    df["fuzzy_score_uns"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(lambda x: fn.process_fuzzy_score_uns(x))
+    return df
+
+@op
+def normalize_mention_adresse(df):
+    # ajout d'une col : mention_adresse_norm cas général
     df["mention_adresse_norm"] = np.nan
-    df.loc[df['fuzzy_uca_developpee'] >= 90, 'mention_adresse_norm'] = 'uca_forme_developpee'
-    df.loc[(df['fuzzy_uca_sigle'] >= 90) & (df['fuzzy_uca_developpee'] < 90), 'mention_adresse_norm'] = 'uca_sigle'
-    df.loc[(df['fuzzy_uns'] >= 90) & (df['mention_adresse_norm'].isna()), 'mention_adresse_norm'] = 'uns'
+    df.loc[df['fuzzy_score_uca_dvp'] >= 87, 'mention_adresse_norm'] = 'uca_forme_developpee'
+    df.loc[(df['fuzzy_score_uca_sigle'] >= 90) & (df['mention_adresse_norm'].isna()), 'mention_adresse_norm'] = 'uca_sigle'
+    df.loc[((df['fuzzy_score_uns'] >= 90)) & (df['mention_adresse_norm'].isna()), 'mention_adresse_norm'] = 'uns'
     df.loc[df['mention_adresse_norm'].isna(), 'mention_adresse_norm'] = 'universite_non_mentionnee'
-    # mention adresse normalisée 3 cas principaux de respect de la charte
-    df["mention_adresse_norm_charte"] = np.nan
-    df.loc[df['fuzzy_uca_developpee'] >= 90, 'mention_adresse_norm_charte'] = 'cas1_uca_forme_developpee'
-    df.loc[(df['fuzzy_uca_sigle'] >= 90) & (df['fuzzy_uca_developpee'] < 90), 'mention_adresse_norm_charte'] = 'cas2_uca_sigle'
-    df.loc[df['mention_adresse_norm_charte'].isna(), 'mention_adresse_norm_charte'] = 'cas3_autres'
+    return df
+	
+@op(required_resource_keys={"config_params"})
+def normalize_mention_adresse_avec_position(context,df):
+    # ajout d'une col : mention_adresse_norm_position détail position uca
+    df["mention_adresse_norm_avec_position"] = np.nan	
+    df.loc[(df['mention_adresse_norm']  == "uca_forme_developpee") & (df['fuzzy_position_uca_dvp'] == "debut"), 'mention_adresse_norm_avec_position'] = 'uca_forme_developpee_debut'
+    df.loc[(df['mention_adresse_norm']  == "uca_forme_developpee") & (df['fuzzy_position_uca_dvp'] == "interne"), 'mention_adresse_norm_avec_position'] = 'uca_forme_developpee_interne'
+    df.loc[df['mention_adresse_norm']  == "uca_sigle", 'mention_adresse_norm_avec_position'] = 'uca_sigle'
+    df.loc[df['mention_adresse_norm']  == "uns", 'mention_adresse_norm_avec_position'] = 'uns'
+    df.loc[df['mention_adresse_norm'] == "universite_non_mentionnee", 'mention_adresse_norm_avec_position'] = 'universite_non_mentionnee'
+    context.log_event(
+        AssetObservation(asset_key="normalize_mentionAdresses", metadata={
+            "text_metadata": 'Vérif de la normalisation des mentions d\'adresse',
+            "size": f"nb lignes {df.shape[0]}, nb cols {df.shape[1]}",
+            "result": df[["mention_adresse_norm","mention_adresse_norm_avec_position"]].head(2).to_json()})
+    )
+    df.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/temp_detail_controle_mentionAdresses.csv', index=False, encoding="utf-8")
     return df
 
 @op(required_resource_keys={"config_params"})
@@ -53,6 +78,12 @@ def add_structures_aff_labels(context,df):
     df_affs['affiliation_id'] = df_affs['affiliation_id'].astype('string')
     df['@afids'] = df['@afids'].astype('string')
     df = pd.merge(df, df_affs[['affiliation_id', 'affiliation_name']], how='left', left_on=['@afids'], right_on=['affiliation_id']).drop(columns=['affiliation_id'])
+    context.log_event(
+        AssetObservation(asset_key="normalize_mentionAdresses", metadata={
+            "text_metadata": 'Vérif du merge des afids',
+            "size": f"nb lignes {df.shape[0]}, nb cols {df.shape[1]}",
+            "result": df[["@afids","mention_adresse_norm","mention_adresse_norm_avec_position"]].head(2).to_json()})
+    )
     return df
 
 @op
@@ -61,8 +92,8 @@ def regroup_mentions_adresse_by_publis(df):
 
 #ajout v2
 @op
-def regroup_mentions_adresse_charte_by_publis(df):
-    return fn.regroup(df,'mention_adresse_norm_charte')
+def regroup_mentions_adresse_position_by_publis(df):
+    return fn.regroup(df,'mention_adresse_norm_avec_position')
 
 @op
 def regroup_aff_ids_by_publis(df):
@@ -86,9 +117,9 @@ def save_detail_data(context,df):
     return df.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/detail_controle_mentionAdresses.csv', index=False, encoding="utf-8")
 
 @op
-def clean_regroup_by_publis_data_v2(df):
+def clean_regroup_by_publis_data(df):
     # drop columns
-    df = df.drop(columns=['@orcid','@auid','ce:indexed-name','mentionAffil_reconstruct', 'mentionAffil_reconstruct_subsentence_cleaned', 'fuzzy_uca_developpee', 'fuzzy_uca_sigle', 'fuzzy_uns', 'mention_adresse_norm', 'mention_adresse_norm_charte', '@afids', 'affiliation_name'])
+    df = df.drop(columns=['@orcid','@auid','ce:indexed-name','mentionAffil_reconstruct', 'mentionAffil_reconstruct_subsentence_cleaned', 'fuzzy_data_uca_dvp', 'fuzzy_score_uca_dvp', 'fuzzy_position_uca_dvp', 'fuzzy_score_uca_sigle', 'fuzzy_score_uns','mention_adresse_norm', 'mention_adresse_norm_avec_position', '@afids', 'affiliation_name'])
     # prefered kepped rows when deduplicate
     for column_name in ['corresponding_author', 'Is_dc:creator']:
         df[column_name] = df[column_name].astype('category')
@@ -101,10 +132,12 @@ def clean_regroup_by_publis_data_v2(df):
     df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm'].str.contains('uca_sigle')) & (df_deduplicate['synthese_mention_adresse_norm'].isna()),'synthese_mention_adresse_norm'] = 'uca_sigle'
     df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm'].str.contains('uns')) & (df_deduplicate['synthese_mention_adresse_norm'].isna()),'synthese_mention_adresse_norm'] = 'uns'
     df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm'].str.contains('universite_non_mentionnee')) & (df_deduplicate['synthese_mention_adresse_norm'].isna()),'synthese_mention_adresse_norm'] = 'universite_non_mentionnee'
-    # consolide mention_adresse 3 cas d'application de la charte au niveau de la publication
-    df_deduplicate.loc[df_deduplicate['regroup_mention_adresse_norm_charte'].str.contains('cas1_uca_forme_developpee'),'synthese_mention_adresse_norm_charte'] = 'cas1_uca_forme_developpee'
-    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm_charte'].str.contains('cas2_uca_sigle')) & (df_deduplicate['synthese_mention_adresse_norm_charte'].isna()),'synthese_mention_adresse_norm_charte'] = 'cas2_uca_sigle'
-    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm_charte'].str.contains('cas3_autres')) & (df_deduplicate['synthese_mention_adresse_norm_charte'].isna()),'synthese_mention_adresse_norm_charte'] = 'cas3_autres'
+    # consolide mention_adresse avec position uca
+    df_deduplicate.loc[df_deduplicate['regroup_mention_adresse_norm_avec_position'].str.contains('uca_forme_developpee_debut'),'synthese_mention_adresse_norm_avec_position'] = 'uca_forme_developpee_debut'
+    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm_avec_position'].str.contains('uca_forme_developpee_interne')) & (df_deduplicate['synthese_mention_adresse_norm_avec_position'].isna()),'synthese_mention_adresse_norm_avec_position'] = 'uca_forme_developpee_interne'
+    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm_avec_position'].str.contains('uca_sigle')) & (df_deduplicate['synthese_mention_adresse_norm_avec_position'].isna()),'synthese_mention_adresse_norm_avec_position'] = 'uca_sigle'
+    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm_avec_position'].str.contains('uns')) & (df_deduplicate['synthese_mention_adresse_norm_avec_position'].isna()),'synthese_mention_adresse_norm_avec_position'] = 'uns'
+    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm_avec_position'].str.contains('universite_non_mentionnee')) & (df_deduplicate['synthese_mention_adresse_norm_avec_position'].isna()),'synthese_mention_adresse_norm_avec_position'] = 'universite_non_mentionnee'
     return df_deduplicate
 
 @asset(required_resource_keys={"config_params"})
@@ -142,7 +175,7 @@ def get_afids_value_counts(context):
     return df
 
 @asset(required_resource_keys={"config_params"})
-def consolidate_regroup_crosstabs_v2(context,df):
+def consolidate_regroup_crosstabs_adresse_norm(context,df):
     #from regroup data
     ##crosstab annee_pub/synthese_mention_adresse_norm en valeurs absolues avec totaux
     absolute_data = pd.crosstab(df["annee_pub"], df["synthese_mention_adresse_norm"],normalize=False, margins=True, margins_name="Total").reset_index()
@@ -157,6 +190,23 @@ def consolidate_regroup_crosstabs_v2(context,df):
             indice_data[c].iloc[0])*100).round(2)
     indice_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_crosstab_annee_mention_indices.csv', index=False, encoding="utf-8")
 
+
+@asset(required_resource_keys={"config_params"})
+def consolidate_regroup_crosstabs_adresse_norm_position(context,df):
+    #from regroup data
+    ##crosstab annee_pub/synthese_mention_adresse_norm en valeurs absolues avec totaux
+    absolute_data = pd.crosstab(df["annee_pub"], df["synthese_mention_adresse_norm_avec_position"],normalize=False, margins=True, margins_name="Total").reset_index()
+    absolute_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_crosstab_annee_mention_avec_position_valeurs_absolues.csv', index=False, encoding="utf-8")
+    ##crosstab annee_pub/synthese_mention_adresse_norm en pourcentages avec totaux
+    percent_data = (pd.crosstab(df["annee_pub"], df["synthese_mention_adresse_norm_avec_position"],normalize=True, margins=True, margins_name="Total")*100).round(3).reset_index()
+    percent_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_crosstab_annee_mention_avec_position_pourcentages.csv', index=False, encoding="utf-8")
+    ##crosstab annee_pub/synthese_mention_adresse_norm en indice base 100 en 2016 et sans totaux
+    indice_data = absolute_data.iloc[:-1, :].iloc[:, :-1]
+    for c in ['universite_non_mentionnee', 'uca_forme_developpee_interne', 'uca_forme_developpee_debut','uca_sigle', 'uns']:
+        indice_data[f'indice_{c}'] = (indice_data[c].div(
+            indice_data[c].iloc[0])*100).round(2)
+    indice_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_crosstab_annee_mention_avec_position_indices.csv', index=False, encoding="utf-8")
+
 ########################## 03_SAVE_SQLITE ################################
 
 @op(required_resource_keys={"config_params"})
@@ -168,6 +218,7 @@ def create_bsi_all_by_mention_adresse_table(context,df):
     cur.execute(f"DROP TABLE IF EXISTS bsi_all_by_mention_adresse_{observation_date}")
     cur.execute(f"CREATE TABLE bsi_all_by_mention_adresse_{observation_date} ({','.join(map(str,df.columns))});")
     return df.to_sql(f"bsi_all_by_mention_adresse_{observation_date}", conn, if_exists='append', index=False)
+    #ajouter con.close() partout sinon error database locked
 
 @op(required_resource_keys={"config_params"})
 def create_bsi_publis_uniques_table(context,df):
@@ -201,15 +252,18 @@ def main_fuzzy_process():
     #configs
     data_source = extract_data_source()
     nlp_data = transform_nlp_data(data_source)
-    fuzzy_data = transform_fuzzy_data_v2(nlp_data)
-    norm_mention_adresse = normalize_mention_adresse_v2(fuzzy_data)
-    structures_aff_labels = add_structures_aff_labels(norm_mention_adresse)
+    fuzzy_data_uca_dvp = get_fuzzy_data_uca_dvp(nlp_data)
+    fuzzy_score_uca_sigle = get_fuzzy_score_uca_sigle(fuzzy_data_uca_dvp)
+    fuzzy_data_uns = get_fuzzy_data_uns(fuzzy_score_uca_sigle)
+    norm_mention_adresse = normalize_mention_adresse(fuzzy_data_uns)
+    norm_mention_adresse_avec_position = normalize_mention_adresse_avec_position(norm_mention_adresse)
+    structures_aff_labels = add_structures_aff_labels(norm_mention_adresse_avec_position)
     mentions_adresse_by_publis = regroup_mentions_adresse_by_publis(structures_aff_labels)
-    mentions_adresse_charte_by_publis = regroup_mentions_adresse_charte_by_publis(mentions_adresse_by_publis)
-    aff_ids_by_publis = regroup_aff_ids_by_publis( mentions_adresse_charte_by_publis)
+    mentions_adresse_position_by_publis = regroup_mentions_adresse_position_by_publis(mentions_adresse_by_publis)
+    aff_ids_by_publis = regroup_aff_ids_by_publis( mentions_adresse_position_by_publis)
     aff_names_by_publis = regroup_aff_names_by_publis(aff_ids_by_publis)
     authors_names_by_publis = regroup_authors_names_by_publis(aff_names_by_publis)
-    cleaned_regroup_by_publis_data = clean_regroup_by_publis_data_v2(authors_names_by_publis)
+    cleaned_regroup_by_publis_data = clean_regroup_by_publis_data(authors_names_by_publis)
     save_detail_data(structures_aff_labels)
     save_regroup_by_publis_data(cleaned_regroup_by_publis_data)
     
@@ -223,7 +277,8 @@ def consolidated_data():
     detail_data = get_detail_data()
     regroup_data = get_regoup_data()
     consolidate_afids_value_counts(detail_data)
-    consolidate_regroup_crosstabs_v2(regroup_data)
+    consolidate_regroup_crosstabs_adresse_norm(regroup_data)
+    consolidate_regroup_crosstabs_adresse_norm_position(regroup_data)
 
 @job(name="03_save_sqlite",
 resource_defs={"config_params": make_values_resource()},
@@ -249,6 +304,7 @@ Config
 resources:
   config_params:
     config:
+      bert_model: msmarco-distilbert-base-tas-b
       db_path: bso_publis_scopus/09_db/publications.db
       raw_data_path: bso_publis_scopus/01_raw
       intermediate_data_path: bso_publis_scopus/02_intermediate

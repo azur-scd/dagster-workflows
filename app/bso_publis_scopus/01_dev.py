@@ -1,5 +1,8 @@
 import graphlib
 from dagster import job, op, graph, repository, asset, AssetIn, AssetMaterialization, AssetObservation, Out, In, String, MetadataValue, make_values_resource
+from sentence_transformers import SentenceTransformer, util
+from nltk import word_tokenize 
+from nltk.util import ngrams
 import pandas as pd
 import numpy as np
 import glob
@@ -8,74 +11,119 @@ import sqlite3
 
 ########################## [OLD] 01_MAIN_FUZZY ################################
 
-@op
-def transform_fuzzy_data_v1(df):
-    df["fuzzy_extractone_uca_developpee"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.fuzzy_extractone_uca_developpee)
-    df["fuzzy_extractone_uca_sigle"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.fuzzy_extractone_uca_sigle)
-    df["fuzzy_extractone_uns_developpee"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.fuzzy_extractone_uns_developpee)
-    df["fuzzy_extractone_uns_sigle"] = df["mentionAffil_reconstruct_subsentence_cleaned"].apply(fn.fuzzy_extractone_uns_sigle)
-    return df
+def apply_model(model,univ_forme,affil_forme):
+    model = model
+    cos_sin_list = list()
+    for i in affil_forme:
+        # util.cos_sim(emb2, model.encode(str(i))) est un objet de type pytorch.tensor
+        cos_sin_list.append(util.cos_sim(model.encode(univ_forme), model.encode((str(i)))).item())
+    return cos_sin_list
 
-@op
-def normalize_mention_adresse_v1(df):
-    df["mention_adresse_norm"] = np.nan
-    df.loc[df['fuzzy_extractone_uca_developpee'] >= 90, 'mention_adresse_norm'] = 'uca_developpee'
-    df.loc[(df['fuzzy_extractone_uca_sigle'] >= 90) & (df['fuzzy_extractone_uca_developpee'] < 90), 'mention_adresse_norm'] = 'uca_sigle_seul'
-    df.loc[((df['fuzzy_extractone_uns_developpee'] >= 90) | (df['fuzzy_extractone_uns_sigle'] >= 90)) & (df['mention_adresse_norm'].isna()), 'mention_adresse_norm'] = 'uns_seul'
-    df.loc[df['mention_adresse_norm'].isna(), 'mention_adresse_norm'] = 'ni_uca_ni_uns'
-    return df
+def flatten(l):
+    return [item for sublist in l for item in sublist]
 
-@op
-def clean_regroup_by_publis_data(df):
-    # drop columns
-    df = df.drop(columns=['@orcid','@auid','ce:indexed-name','mentionAffil_reconstruct', 'mentionAffil_reconstruct_subsentence_cleaned', 'fuzzy_extractone_uca_developpee', 'fuzzy_extractone_uca_sigle', 'fuzzy_extractone_uns_developpee', 'fuzzy_extractone_uns_sigle', 'mention_adresse_norm', '@afids', 'affiliation_name'])
-    # prefered kepped rows when deduplicate
-    for column_name in ['corresponding_author', 'Is_dc:creator']:
-        df[column_name] = df[column_name].astype('category')
-    df["corresponding_author"] = df["corresponding_author"].cat.set_categories(['oui', 'non', 'corr absent pour cette publi'], ordered=True)
-    df["Is_dc:creator"] = df["Is_dc:creator"].cat.set_categories(['oui', 'non'], ordered=True)
-    df.sort_values(by=['dc:identifiers', 'corresponding_author','Is_dc:creator'])
-    df_deduplicate = df.drop_duplicates(subset=['dc:identifiers'], keep='first')
-    # consolide mention_adresse at publi level
-    df_deduplicate.loc[df_deduplicate['regroup_mention_adresse_norm'].str.contains('uca_developpee'),'synthese_mention_adresse_norm'] = 'uca_developpee'
-    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm'].str.contains('uca_sigle_seul')) & (df_deduplicate['synthese_mention_adresse_norm'].isna()),'synthese_mention_adresse_norm'] = 'uca_sigle_seul'
-    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm'].str.contains('uns_seul')) & (df_deduplicate['synthese_mention_adresse_norm'].isna()),'synthese_mention_adresse_norm'] = 'uns_seul'
-    df_deduplicate.loc[(df_deduplicate['regroup_mention_adresse_norm'].str.contains('ni_uca_ni_uns')) & (df_deduplicate['synthese_mention_adresse_norm'].isna()),'synthese_mention_adresse_norm'] = 'ni_uca_ni_uns'
-    return df_deduplicate
+def get_ngrams(l,num):
+    l = [x.replace("'","") for x in l]
+    line_flat = " ".join(l)
+    n_grams = ngrams(word_tokenize(line_flat), num)
+    return [' '.join(grams) for grams in n_grams]
+
+@op(required_resource_keys={"config_params"})
+def load_model(context):
+    model = SentenceTransformer(f'{context.resources.config_params["bert_model"]}')
+    return model
 
 @asset(required_resource_keys={"config_params"})
-def consolidate_regroup_crosstabs(context,df):
-    #from regroup data
-    ##crosstab annee_pub/synthese_mention_adresse_norm en valeurs absolues avec totaux
-    absolute_data = pd.crosstab(df["annee_pub"], df["synthese_mention_adresse_norm"],normalize=False, margins=True, margins_name="Total").reset_index()
-    absolute_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_crosstab_annee_mention_valeurs_absolues.csv', index=False, encoding="utf-8")
-    ##crosstab annee_pub/synthese_mention_adresse_norm en pourcentages avec totaux
-    percent_data = (pd.crosstab(df["annee_pub"], df["synthese_mention_adresse_norm"],normalize=True, margins=True, margins_name="Total")*100).round(3).reset_index()
-    percent_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_crosstab_annee_mention_pourcentages.csv', index=False, encoding="utf-8")
-    ##crosstab annee_pub/synthese_mention_adresse_norm en indice base 100 en 2016 et sans totaux
-    indice_data = absolute_data.iloc[:-1, :].iloc[:, :-1]
-    for c in ['ni_uca_ni_uns', 'uca_developpee', 'uca_sigle_seul', 'uns_seul']:
-        indice_data[f'indice_{c}'] = (indice_data[c].div(
-            indice_data[c].iloc[0])*100).round(2)
-    indice_data.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_crosstab_annee_mention_indices.csv', index=False, encoding="utf-8")
+def extract_data_source(context):
+    df = pd.read_json(f'{context.resources.config_params["raw_data_path"]}/{context.resources.config_params["observation_date"]}/exportDonnees_barometre_complet_{context.resources.config_params["observation_date"]}.json')
+    # keep columns
+    df_sample = df[["dc:identifiers","prism:doi","reference","annee_pub","@afids","mentionAffil_reconstruct","@auid","ce:indexed-name", '@orcid',"corresponding_author","Is_dc:creator"]].sample(50)
+    context.log_event(
+        AssetObservation(asset_key="initial_jp_dataset", metadata={
+            "text_metadata": 'Shape of the sample JP dataset',
+            "size": f"nb lignes {df_sample.shape[0]}, nb cols {df_sample.shape[1]}"})
+    )
+    return df_sample
+
+
+@op
+def transform_nlp_data(df):
+    df['mentionAffil_reconstruct_subsentence_cleaned'] = df['mentionAffil_reconstruct'].apply(fn.str2list).apply(fn.list2str)
+    df['mentionAffil_onegrams'] = df['mentionAffil_reconstruct_subsentence_cleaned'].apply(lambda x: get_ngrams(x,1))
+    df['mentionAffil_trigrams'] = df['mentionAffil_reconstruct_subsentence_cleaned'].apply(lambda x: get_ngrams(x,3))
+    return df
+
+@op
+def get_bert_uca_dvp(df,model):
+    data = df[["dc:identifiers","mentionAffil_trigrams"]].rename(columns={"dc:identifiers": "id", "mentionAffil_trigrams": "mention"})
+    data["score_bert_uca_dvp"] = data["mention"].apply(lambda x : apply_model(model,"universite cote azur",x))
+    data["max_score_bert_uca_dvp"] = data["score_bert_uca_dvp"].apply(lambda x: round(max(x),1) if  len(x)  != 0 else 0)
+    data["position_max_score_bert_uca_dvp"] = data["score_bert_uca_dvp"].apply(lambda x: x.index(max(x)) if len(x) != 0 else None)
+    return data
+
+@op
+def get_bert_uns_dvp(df,model):
+    data = df[["dc:identifiers","mentionAffil_trigrams"]].rename(columns={"dc:identifiers": "id", "mentionAffil_trigrams": "mention"})
+    data["score_bert_uns_dvp"] = data["mention"].apply(lambda x : apply_model(model,"universite nice sophia antipolis",x))
+    data["max_score_bert_uns_dvp"] = data["score_bert_uns_dvp"].apply(lambda x:round(max(x),1) if len(x) != 0 else 0)
+    return data
+
+@op
+def get_fuzzy_sigles(df):
+    data = df[["dc:identifiers","mentionAffil_onegrams"]].rename(columns={"dc:identifiers": "id", "mentionAffil_onegrams": "mention"})
+    data["score_fuzzy_uca_sigle"] = data["mention"].apply(fn.fuzzy_uca_sigle)
+    data["score_fuzzy_uns_sigle"] = data["mention"].apply(fn.fuzzy_uns_sigle)
+    return data
+
+@op
+def merge_nlp_process(df,data):
+    return pd.merge(df,data,left_on="dc:identifiers", right_on="id", how="left").drop(columns=['id','mention'])
+
+@asset(required_resource_keys={"config_params"})
+def save(context,df):
+  df.to_csv(f'{context.resources.config_params["dev_data_path"]}/df_uca_dvp_test.csv', index=False, encoding="utf-8")
+
+
+@job(name="01_test_bert",
+     resource_defs={"config_params": make_values_resource()},
+    metadata={
+        "notes": MetadataValue.text("1. ")
+    }
+)
+def dev_bert():
+    #configs
+    model = load_model()
+    data_source = extract_data_source()
+    nlp_data = transform_nlp_data(data_source)
+    bert_uca_dvp = get_bert_uca_dvp(nlp_data,model)
+    bert_uns_dvp = get_bert_uns_dvp(nlp_data,model)
+    fuzzy_sigles = get_fuzzy_sigles(nlp_data)
+    merged_nlp_process = merge_nlp_process(merge_nlp_process(merge_nlp_process(nlp_data,bert_uca_dvp),bert_uns_dvp), fuzzy_sigles)
+    save(merged_nlp_process)
+
+@repository
+def dev_bso_publis_scopus():
+    return [dev_bert]
+
 
 """
 Config
-ops:
-  get_publis_uniques_doi_oa_data_with_bsoclasses:
+resources:
+  config_params:
     config:
+      bert_model: all-mpnet-base-v2
+      db_path: bso_publis_scopus/09_db/publications.db
+      dev_data_path: bso_publis_scopus/00_dev
+      raw_data_path: bso_publis_scopus/01_raw
+      intermediate_data_path: bso_publis_scopus/02_intermediate
+      primary_data_path: bso_publis_scopus/03_primary
+      feature_data_path: bso_publis_scopus/04_feature
+      model_input_data_path: bso_publis_scopus/05_model_input
+      models_path: bso_publis_scopus/06_models
       model_output_data_path: bso_publis_scopus/07_model_output
-      observation_date: 2022-08-29
-  get_crossref_data:
-    config:
-      intermediate_data_path: bso_publis_scopus/02_intermediate
-  get_dissemin_data:
-    config:
-      intermediate_data_path: bso_publis_scopus/02_intermediate
-  merge_data:
-    config:
       reporting_data_path: bso_publis_scopus/08_reporting
       observation_date: 2022-08-29
+      corpus_end_year: 2022
 """
 
 

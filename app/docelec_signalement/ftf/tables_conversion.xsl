@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:variable name="standard">
 <entry>
@@ -380,6 +380,11 @@
 		<PackageName>Prairial Open Access</PackageName>
 		<AccessType>1</AccessType>
 		<Note/>
+	</entry>
+	<entry>
+		<PackageName>Springer eBooks (Political Science &amp; International Studies) - (ISTEX - Licences Nationales)</PackageName>
+		<AccessType>0</AccessType>
+		<Note>Ressource acquise en Licence Nationale</Note>
 	</entry>
 </xsl:variable>
 <xsl:variable name="specific">
