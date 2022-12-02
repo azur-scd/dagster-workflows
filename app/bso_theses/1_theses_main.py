@@ -6,7 +6,9 @@ from bs4 import BeautifulSoup
 import json
 import helpers as hp
 import os
+import sqlite3
 
+########################## 01_MAIN ################################
 
 @op(required_resource_keys={"config_params"})
 def create_subdirectory(context):
@@ -24,7 +26,7 @@ def load_abes_datagouv_data(context):
     )
     return df
 
-@op
+@op(required_resource_keys={"config_params"})
 def extract_uca_data(context,df):
     df_tmp = df[df.source == "star"][['accessible', 'auteurs.0.idref', 'auteurs.0.nom', 'auteurs.0.prenom', 'cas', 'code_etab', 'date_soutenance', 'directeurs_these.0.idref', 'directeurs_these.0.nom', 'directeurs_these.0.prenom', 'directeurs_these.1.idref', 'directeurs_these.1.nom', 'directeurs_these.1.prenom', 'discipline.fr', 'ecoles_doctorales.0.nom', 'embargo', 'etablissements_soutenance.0.idref', 'etablissements_soutenance.1.idref', 'etablissements_soutenance.0.nom', 'etablissements_soutenance.1.nom', 'iddoc', 'langue', 'nnt', 'oai_set_specs', 'partenaires_recherche.0.idref', 'partenaires_recherche.0.nom', 'partenaires_recherche.0.type', 'partenaires_recherche.1.idref', 'partenaires_recherche.1.nom', 'partenaires_recherche.1.type', 'partenaires_recherche.2.idref', 'partenaires_recherche.2.nom', 'partenaires_recherche.2.type','titres.fr']]
     etabs_uca = context.resources.config_params["uca_etabs"]
@@ -40,6 +42,8 @@ def extract_fr_data(df):
     df_tmp = df[df.source == "star"][['accessible', 'cas', 'code_etab', 'date_soutenance','discipline.fr','etablissements_soutenance.1.nom','embargo','langue', 'nnt', 'oai_set_specs']]
     return df_tmp.convert_dtypes()
 
+"""
+[Pris en charge en amont dans le notebook de contrôle]
 @asset(required_resource_keys={"config_params"})
 def scrap_oai_data(context):
     df = hp.scrapping_oai_sets_dewey()
@@ -49,6 +53,11 @@ def scrap_oai_data(context):
             "size": f"nb lignes {df.shape[0]}, nb cols {df.shape[1]}"})
     )
     df.to_csv(f'{context.resources.config_params["intermediate_data_path"]}/oai_set_specs_dewey_labels.csv', index=False, encoding='utf8')
+    return df.to_dict('records')"""
+
+@asset(required_resource_keys={"config_params"})
+def get_oai_data(context):
+    df = pd.read_csv(f'{context.resources.config_params["intermediate_data_path"]}/oai_set_specs_dewey_labels.csv', sep=",", encoding='utf8')
     return df.to_dict('records')
 
 @op
@@ -68,8 +77,8 @@ def clean_ending_data(df):
 
 @op
 def create_oa_variables(df):
-    df["is_oa_normalized"] = df["accessible"]
-    df['is_oa_normalized'] = df['is_oa_normalized'].replace(['oui','non'],['Accès ouvert','Accès fermé'])
+    df["accessible_normalized"] = df["accessible"]
+    df['accessible_normalized'] = df['accessible_normalized'].replace(['oui','non'],['Accès libre','Accès restreint'])
     return df
 
 @op
@@ -109,7 +118,7 @@ def create_discipline_variables(df,oai_data):
     return df
 
 @asset(required_resource_keys={"config_params"})
-def save_uca_data(context,df):
+def save_theses_uca(context,df):
     context.log_event(
         AssetObservation(asset_key="result_uca_dataset", metadata={
             "text_metadata": 'Shape of the UCA result dataset',
@@ -119,7 +128,7 @@ def save_uca_data(context,df):
     return df
 
 @asset(required_resource_keys={"config_params"})
-def save_fr_data(context,df):
+def save_theses_fr(context,df):
     context.log_event(
         AssetObservation(asset_key="result_fr_dataset", metadata={
             "text_metadata": 'Shape of the fr result dataset',
@@ -128,7 +137,55 @@ def save_fr_data(context,df):
     df.to_csv(f'{context.resources.config_params["primary_data_path"]}/{context.resources.config_params["last_observation_date"]}/theses_fr_processed.csv', index=False, encoding='utf8')
     return df
 
-@job(name="01_theses_main",
+########################## 02_SAVE_SQLITE ################################
+
+@asset(required_resource_keys={"config_params"})
+def get_theses_uca(context):
+    df = pd.read_csv(f'{context.resources.config_params["primary_data_path"]}/{context.resources.config_params["last_observation_date"]}/theses_uca_processed.csv', sep=",", encoding='utf8')
+    context.log_event(
+        AssetObservation(asset_key="result_uca_dataset", metadata={
+            "text_metadata": 'Shape of the uca result dataset',
+            "size": f"nb lignes {df.shape[0]}, nb cols {df.shape[1]}"})
+    )
+    return df
+
+@asset(required_resource_keys={"config_params"})
+def get_theses_fr(context):
+    df = pd.read_csv(f'{context.resources.config_params["primary_data_path"]}/{context.resources.config_params["last_observation_date"]}/theses_fr_processed.csv', sep=",", encoding='utf8')
+    context.log_event(
+        AssetObservation(asset_key="result_fr_dataset", metadata={
+            "text_metadata": 'Shape of the fr result dataset',
+            "size": f"nb lignes {df.shape[0]}, nb cols {df.shape[1]}"})
+    )
+    return df
+
+@op(required_resource_keys={"config_params"})
+def db_connexion(context):
+    conn = sqlite3.connect(f'{context.resources.config_params["db_path"]}')
+    return conn
+
+@op(required_resource_keys={"config_params"})
+def create_theses_uca_table(context,df):
+    last_observation_date = context.resources.config_params['last_observation_date'].replace("-","")
+    conn = sqlite3.connect(f'{context.resources.config_params["db_path"]}')
+    cur = conn.cursor()
+    cur.execute(f"DROP TABLE IF EXISTS bso_theses_uca_{last_observation_date}")
+    cur.execute(f"CREATE TABLE bso_theses_uca_{last_observation_date} ({','.join(map(str,df.columns))});")
+    return df.to_sql(f"bso_theses_uca_{last_observation_date}", conn, if_exists='append', index=False)
+
+@op(required_resource_keys={"config_params"})
+def create_theses_fr_table(context,df):
+    last_observation_date = context.resources.config_params['last_observation_date'].replace("-","")
+    conn = sqlite3.connect(f'{context.resources.config_params["db_path"]}')
+    cur = conn.cursor()
+    cur.execute(f"DROP TABLE IF EXISTS bso_theses_fr_{last_observation_date}")
+    cur.execute(f"CREATE TABLE bso_theses_fr_{last_observation_date} ({','.join(map(str,df.columns))});")
+    return df.to_sql(f"bso_theses_fr_{last_observation_date}", conn, if_exists='append', index=False)
+
+########################## JOBS ################################
+################################################################
+
+@job(name="01_main",
      resource_defs={"config_params": make_values_resource()},
      metadata={
         "notes": MetadataValue.text("A faire : UDICE")
@@ -137,28 +194,40 @@ def save_fr_data(context,df):
 def theses_main():
     create_subdirectory()
     #get oai/dewey mapping
-    load_oai_data = scrap_oai_data()
+    load_oai_data = get_oai_data()
     #get source datafile
     load_abes_data = load_abes_datagouv_data()
     #process uca data
-    save_uca_data(clean_ending_data(create_discipline_variables(create_embargo_variables(create_date_variables(create_oa_variables(clean_column_names(extract_uca_data(load_abes_data))))),load_oai_data)))
+    save_theses_uca(clean_ending_data(create_discipline_variables(create_embargo_variables(create_date_variables(create_oa_variables(clean_column_names(extract_uca_data(load_abes_data))))),load_oai_data)))
     #process fr data
-    save_fr_data(clean_ending_data(create_discipline_variables(create_embargo_variables(create_date_variables(create_oa_variables(extract_fr_data(load_abes_data)))),load_oai_data)))
+    save_theses_fr(clean_ending_data(create_discipline_variables(create_embargo_variables(create_date_variables(create_oa_variables(clean_column_names(extract_fr_data(load_abes_data))))),load_oai_data)))
     #todo : process udice data
+
+@job(name="02_sqlite_save_process",
+     resource_defs={"config_params": make_values_resource()},
+     metadata={
+        "notes": MetadataValue.text("")
+    })
+def sqlite_save_process():
+    theses_uca = get_theses_uca()
+    theses_fr = get_theses_fr()
+    create_theses_uca_table(theses_uca)
+    create_theses_fr_table(theses_fr)
 
 @repository
 def prod_bso_theses():
-    return [theses_main]
+    return [theses_main,sqlite_save_process]
 
 """
 Config
 resources:
   config_params:
     config:
+      db_path: bso_theses/09_db/theses.db
       raw_data_path: "bso_theses/01_raw"
       intermediate_data_path: "bso_theses/02_intermediate"
       primary_data_path: "bso_theses/03_primary"
       datagouv_abes_dataset_url: "https://www.data.gouv.fr/fr/datasets/r/eb06a4f5-a9f1-4775-8226-33425c933272"
-      last_observation_date: "2022-05-30"
+      last_observation_date: "2022-10-17"
       uca_etabs: ['NICE','COAZ','AZUR']
 """

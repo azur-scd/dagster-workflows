@@ -114,7 +114,8 @@ def save_detail_data(context,df):
             "text_metadata": 'Shape of the dataset',
             "size": f"nb lignes {df.shape[0]}, nb cols {df.shape[1]}"})
     )
-    return df.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/detail_controle_mentionAdresses.csv', index=False, encoding="utf-8")
+    df.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/detail_controle_mentionAdresses.csv', index=False, encoding="utf-8")
+    df.to_excel(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/d2p_all_mentions.xlsx')
 
 @op
 def clean_regroup_by_publis_data(df):
@@ -147,7 +148,8 @@ def save_regroup_by_publis_data(context,df):
             "text_metadata": 'Shape of the dataset',
             "size": f"nb lignes {df.shape[0]}, nb cols {df.shape[1]}"})
     )
-    return df.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/regroupbypublis_controle_mentionAdresses.csv', index=False, encoding="utf-8")
+    df.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/regroupbypublis_controle_mentionAdresses.csv', index=False, encoding="utf-8")
+    df.to_excel(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/d2p_all_publis.xlsx')
 
 ########################## 02_CONSOLIDATED_DATA ################################
 
@@ -162,12 +164,64 @@ def get_regoup_data(context):
     return df
 
 @asset(required_resource_keys={"config_params"})
-def consolidate_afids_value_counts(context,df):
+def consolidate_detail_afids_value_counts(context,df):
     # from detail data
-    ## dataframe value_counts par afids -> conversion en dict pour dcc.dropdown
+    ## dataframe value_counts par afids -> conversion en dict pour dcc.dropdown [unused finally)]
     df_afids_value_counts = pd.DataFrame(df[["@afids","affiliation_name"]].value_counts()).reset_index().rename(columns={0: "total","@afids": "value"})
     df_afids_value_counts["label"] = df_afids_value_counts["affiliation_name"] + " (" + df_afids_value_counts["total"].astype(str) + ")"
     df_afids_value_counts[["label","value"]].to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/detail_afids_value_counts.csv', index=False, encoding="utf-8")
+
+@asset(required_resource_keys={"config_params"})
+def consolidate_regroup_afids_value_counts(context,df):
+    ## from detail data
+    ## dataframe value_counts of unique dc:identifiers par afids (utilisation de groupby plutôt que crosstab car pas de possibilité de dédoublonner ensuite par dc:identifiers avec crosstab)
+    corpus_range = map(str,range(context.resources.config_params["corpus_start_year"],context.resources.config_params["corpus_end_year"]+1,1))
+    corpus_range_list = [x for x in corpus_range]
+    # group by aff and pub year and count unique dc:identifiers
+    df_temp = (df.groupby(['@afids', 'affiliation_name', 'annee_pub']).agg(**{'nb_publis': ('dc:identifiers', 'nunique')})
+                             .reset_index()
+                             .sort_values(by=['nb_publis'], ascending=[False]))
+    # change cols type
+    df_temp['annee_pub'] = df_temp['annee_pub'].astype('string')
+    df_temp['nb_publis'] = pd.to_numeric(df_temp['nb_publis'], downcast='integer', errors='coerce')
+    # pass rows to cols
+    df_afids_value_counts = (pd.pivot_table(df_temp,values='nb_publis', index = 'affiliation_name', columns= 'annee_pub', aggfunc= 'sum')
+       .reset_index()
+       .fillna(0)
+       )
+    # change cols type
+    for column_name in corpus_range_list:
+        df_afids_value_counts[column_name] = df_afids_value_counts[column_name].astype('int')
+    # add total col
+    df_afids_value_counts['nb_publis_total'] = df_afids_value_counts[corpus_range_list].sum(axis=1)
+    # rename cols
+    df_afids_value_counts=(df_afids_value_counts.rename(columns={ i : f'nb_publis_{i}' for i in corpus_range_list })
+                           .sort_values(by=['nb_publis_total'], ascending=[False])
+                           )
+    # rename value UCA (affiliation) -> labo inconnu
+    df_afids_value_counts["affiliation_name"] = df_afids_value_counts["affiliation_name"].str.replace('UCA (affiliation)', 'Labo inconnu', regex=False)
+    #save 
+    df_afids_value_counts.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/regroup_afids_value_counts.csv', index=False, encoding="utf-8")
+
+@asset(required_resource_keys={"config_params"})
+def consolidate_top_n_uca_interne(context,df):
+    # produit le top 100 des formes les plus utilisées dans les mentions d'adresse
+    df = df.loc[df['mention_adresse_norm_avec_position'].isin(['uca_forme_developpee_interne'])]
+    df_top_n = (df.groupby(['mentionAffil_reconstruct']).agg(**{'nb_mentions': ('dc:identifiers', 'size')})
+               .reset_index()
+               .sort_values(by=['nb_mentions'], ascending=[False])
+               .nlargest(context.resources.config_params["top_n"], 'nb_mentions'))
+    df_top_n.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/detail_top{str(context.resources.config_params["top_n"])}_mentionAffil_reconstruct.csv', index=False, encoding="utf-8")
+
+@asset(required_resource_keys={"config_params"})
+def consolidate_all_formes_uca_dvp(context,df):
+    df = df.loc[df['mention_adresse_norm'].isin(['uca_forme_developpee'])]
+    df["temp"] = (df["mentionAffil_reconstruct"].apply(lambda x: x.split(","))
+              .apply(lambda x: list(filter(lambda k: ('Azur' in k) & ("Observatoire" not in k) & ("|" not in k), x))).
+               apply(lambda x: x[0].strip() if len(x) ==1 else ''))
+    df_uca_formes = pd.DataFrame(df["temp"].value_counts()).reset_index().rename(columns={0: "total","temp": "value"})
+    df_uca_formes.to_csv(f'{context.resources.config_params["reporting_data_path"]}/{context.resources.config_params["observation_date"]}/controle_mention_adresse/consolidation/detail_all_uca_dvp_formes_value_counts.csv', index=False, encoding="utf-8")
+
 
 @asset(required_resource_keys={"config_params"})
 def get_afids_value_counts(context):
@@ -276,7 +330,10 @@ resource_defs={"config_params": make_values_resource()},
 def consolidated_data():
     detail_data = get_detail_data()
     regroup_data = get_regoup_data()
-    consolidate_afids_value_counts(detail_data)
+    consolidate_detail_afids_value_counts(detail_data)
+    consolidate_regroup_afids_value_counts(detail_data)
+    consolidate_top_n_uca_interne(detail_data)
+    consolidate_all_formes_uca_dvp(detail_data)
     consolidate_regroup_crosstabs_adresse_norm(regroup_data)
     consolidate_regroup_crosstabs_adresse_norm_position(regroup_data)
 
@@ -296,26 +353,27 @@ def save_sqlite():
 
 
 @repository
-def prod_bso_publis_scopus():
+def prod_bsi_publis_scopus():
     return [main_fuzzy_process,consolidated_data,save_sqlite]
 
 """
-Config
 resources:
   config_params:
     config:
       bert_model: msmarco-distilbert-base-tas-b
-      db_path: bso_publis_scopus/09_db/publications.db
-      raw_data_path: bso_publis_scopus/01_raw
-      intermediate_data_path: bso_publis_scopus/02_intermediate
-      primary_data_path: bso_publis_scopus/03_primary
-      feature_data_path: bso_publis_scopus/04_feature
-      model_input_data_path: bso_publis_scopus/05_model_input
-      models_path: bso_publis_scopus/06_models
-      model_output_data_path: bso_publis_scopus/07_model_output
-      reporting_data_path: bso_publis_scopus/08_reporting
-      observation_date: 2022-08-29
       corpus_end_year: 2022
+      corpus_start_year: 2016
+      db_path: bso_publis_scopus/09_db/publications.db
+      feature_data_path: bso_publis_scopus/04_feature
+      intermediate_data_path: bso_publis_scopus/02_intermediate
+      model_input_data_path: bso_publis_scopus/05_model_input
+      model_output_data_path: bso_publis_scopus/07_model_output
+      models_path: bso_publis_scopus/06_models
+      observation_date: 2022-08-29
+      primary_data_path: bso_publis_scopus/03_primary
+      raw_data_path: bso_publis_scopus/01_raw
+      reporting_data_path: bso_publis_scopus/08_reporting
+      top_n: 50
 """
 
 
