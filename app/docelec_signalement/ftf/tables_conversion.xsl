@@ -556,6 +556,14 @@
 		<AccessType>0</AccessType>
 		<Note>Accès sur mot de passe à demander à bu-medecine[at]univ-cotedazur.fr (réservé aux membres de l'université)</Note>
 	</entry>
+	<entry>
+		<Title>La Revue Prescrire - French ed</Title>
+		<Source>Publisher's site</Source>
+		<PrintISSN>0247-7750</PrintISSN>
+		<OnlineISSN/>
+		<AccessType>0</AccessType>
+		<Note>Accès sur mot de passe à demander à bu-medecine[at]univ-cotedazur.fr (réservé aux membres de l'université)</Note>
+	</entry>
 </xsl:variable>
 
 </xsl:stylesheet>

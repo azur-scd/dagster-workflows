@@ -16,3 +16,6 @@ RUN pip install dagster dagit
 EXPOSE 3000
 VOLUME ["/opt/dagster/app"]
 ENTRYPOINT ["dagit", "-h", "0.0.0.0", "-p", "3000"]
+
+#docker build -t azurscd/dagster:latest .
+#docker run --name dagster -p 3000:3000 -v C:/Users/geoffroy/Docker/dagster/app:/opt/dagster/app azurscd/dagster:latest

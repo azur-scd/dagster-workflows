@@ -94,8 +94,8 @@ def create_embargo_variables(df):
     df[['embargo_duree']] = df[['embargo_duree']].fillna(0)
     df['has_exist_embargo'] = df['embargo']
     tmp_condition = df['has_exist_embargo'].isna()
-    df.loc[tmp_condition, 'has_exist_embargo'] = 'non'
-    df.loc[~tmp_condition, 'has_exist_embargo'] = 'oui'
+    df.loc[tmp_condition, 'has_exist_embargo'] = 'Sans embargo'
+    df.loc[~tmp_condition, 'has_exist_embargo'] = 'Avec embargo'
     return df
 
 @op
