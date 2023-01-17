@@ -15,7 +15,7 @@ docker-compose.yml
 
 # Ignore  huge & intermediate & ml files#
 ###################
-/**/*.csv
+app/bso_theses/01_raw/theses-soutenues.csv
 /**/*.db
 /**/*.sqlite
 /**/*.xml
