@@ -406,7 +406,7 @@ def create_subfolders():
 @job(name="02_main_transform_process",
     resource_defs={"config_params": make_values_resource()},
     metadata={
-        "notes": MetadataValue.text("Attention : le fichier 08_reporting/DATE/publis_all_with_affiliations_data.csv contient touets les publis avec ou sans DOI")
+        "notes": MetadataValue.text("Attention : le fichier 08_reporting/DATE/publis_all_with_affiliations_data.csv contient toutes les publis avec ou sans DOI + les publis les plus récentes jusqu'à la date de moissonnage de Scopus")
     }
 )
 def main_transform_process():
