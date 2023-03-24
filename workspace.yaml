@@ -1,0 +1,5 @@
+load_from:
+  - python_file:
+      relative_path: bso_publis/1_scopus_main.py
+      working_directory: bso_publis
+  

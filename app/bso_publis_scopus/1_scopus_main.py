@@ -200,18 +200,25 @@ bso_classes_trad = {"0": "Biologie fondamentale",
                     "<NA>": "Inconnu"}
 @asset
 def get_mesri_bso_dataset():
-    mesri_bso_dataset = pd.read_csv('https://storage.gra.cloud.ovh.net/v1/AUTH_32c5d10cb0fe4519b957064a111717e3/bso_dump/bso-publications-latest.csv.gz',compression='gzip',encoding='utf8').convert_dtypes()
-    return mesri_bso_dataset
+    return pd.read_csv(
+        'https://storage.gra.cloud.ovh.net/v1/AUTH_32c5d10cb0fe4519b957064a111717e3/bso_dump/bso-publications-latest.csv.gz',
+        compression='gzip',
+        encoding='utf8',
+    ).convert_dtypes()
 
 @asset(required_resource_keys={"config_params"})
 def get_publis_uniques_doi_oa_data(context):
-    publis_uniques_doi_oa_data = pd.read_csv(f'{context.resources.config_params["primary_data_path"]}/{context.resources.config_params["observation_date"]}/publis_uniques_doi_oa_data.csv', sep=",", encoding="utf-8")
-    return publis_uniques_doi_oa_data
+    return pd.read_csv(
+        f'{context.resources.config_params["primary_data_path"]}/{context.resources.config_params["observation_date"]}/publis_uniques_doi_oa_data.csv',
+        sep=",",
+        encoding="utf-8",
+    )
 
 @op(required_resource_keys={"config_params"})
 def get_logmodel(context):
-    logmodel = joblib.load(f'{context.resources.config_params["models_path"]}/logmodel.joblib')
-    return logmodel
+    return joblib.load(
+        f'{context.resources.config_params["models_path"]}/logmodel.joblib'
+    )
 	
 """@op(required_resource_keys={"config_params"})
 def get_bso_classes(context):
@@ -477,7 +484,7 @@ def sqlite_save_process():
 
 
 @repository
-def prod_bso_publis_scopus():
+def bso_publis_scopus():
     return [create_subfolders,main_transform_process,unpaywall_and_publishers_doiprefix_process,ml_multiclassification_process,crossref_and_dissemin_data_process,sqlite_save_process]
 
 """

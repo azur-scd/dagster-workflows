@@ -1,0 +1,60 @@
+acronyme,aff_hal_id,aff_scopus_id,comment,domaine,harvest_end,harvest_start,id,label,parent_id,ppn,rnsr_id,statut,type_structure,aff_label
+,,60110693,,,2022,2016,4,Université Côte d'Azur - Labo inconnu,1,,,Actif,,Université Côte d'Azur - Labo inconnu
+IPMC,199361,60006380,,Biologie Médecine Santé,2022,2016,5,Institut de Pharmacologie Moléculaire et Cellulaire,1,05957321X,201220332C,Actif,UMR,Institut de Pharmacologie Moléculaire et Cellulaire - IPMC
+CRHEA,409,60006696,,Physique,2022,2016,6,Centre de Recherche sur l'Hétéro-Epitaxie et ses Applications,1,060408278,200017509L,Actif,UPR,Centre de Recherche sur l'Hétéro-Epitaxie et ses Applications - CRHEA
+,,60010513,,,2022,2016,7,Observatoire de la Côte d'Azur - Labo inconnu,2,035675683,,Actif,,Observatoire de la Côte d'Azur - Labo inconnu
+GEOAZUR,,60101367,,Science de la terre Univers Espace,2022,2016,8,Le Laboratoire Géoazur,2,172062225,200816914E,Actif,UMR,Le Laboratoire Géoazur - GEOAZUR
+ESPACE,87217,60107106,,Sciences de l'homme et Humanités,2022,2016,9,Étude des Structures et des Processus d’Adaptation et des Changements de l’Espace,1,182401367,201220240C,Actif,UMR,Étude des Structures et des Processus d’Adaptation et des Changements de l’Espace - ESPACE
+,,60107140,UCA n'est plus tutelle depuis 2020,,2020,2016,10,Laboratoire Souterrain à Bas Bruit,1,234479388,201220901W,Suppression demandée - En attente,,Laboratoire Souterrain à Bas Bruit
+LJAD,199970,60110369,,Mathématiques,2022,2016,11,Laboratoire de Mathématiques J.A. Dieudonné,1,060325887,201220430J,Actif,UMR,Laboratoire de Mathématiques J.A. Dieudonné - LJAD
+COBTEK,168629,60110689,,Biologie Médecine Santé,2022,2016,12,Cognition Behaviour Technology,1,168085461,201220412P,Actif,UPR,Cognition Behaviour Technology - COBTEK
+TIRO-MATOS,238190,60110690,,Biologie Médecine Santé,2022,2016,13,Transporteurs en Imagerie et Radiothérapie en Oncologie,1,228218861,200815550X,Actif,UMR,Transporteurs en Imagerie et Radiothérapie en Oncologie - TIRO-MATOS
+MICORALIS,450080,60110692,,Biologie Médecine Santé,2022,2016,14,"Microbiologie Orale, Immunothérapie et Santé",1,191161470,201521255T,Actif,UPR,"Microbiologie Orale, Immunothérapie et Santé - MICORALIS"
+C3M,180122,60110695,,Biologie Médecine Santé,2022,2016,15,Centre Méditerranéen de Médecine Moléculaire,1,161561578,201220149D,Actif,UMR,Centre Méditerranéen de Médecine Moléculaire - C3M
+IRCAN,182186,60110697,,Biologie Médecine Santé,2022,2016,16,"Institut de Recherche sur le Cancer et le Vieillissement, Nice",1,184404983,201220417V,Actif,UMR,"Institut de Recherche sur le Cancer et le Vieillissement, Nice - IRCAN"
+CRHI,1723,60110704,,Sciences de l'homme et Humanités,2022,2016,17,Centre de Recherches en Histoires des Idées,1,026366584,200815548V,Actif,UPR,Centre de Recherches en Histoires des Idées - CRHI
+URMIS,1004973,60110705,,Sciences de la société,2022,2016,18,Unité de Recherche Migrations et Société,1,201169754,200919202M,Actif,UMR,Unité de Recherche Migrations et Société - URMIS
+GREDEG,185786,60110706,,Sciences de la société,2022,2016,19,"Groupe de Recherche en Droit, Économie et Gestion",1,142564443,201220333D,Actif,UMR,"Groupe de Recherche en Droit, Économie et Gestion - GREDEG"
+LIRCES,227789,60110707,,Sciences de l'homme et Humanités,2022,2016,20,"Laboratoire Interdisciplinaire Récits, Cultures et Sociétés",1,166052167,200014458V,Actif,UPR,"Laboratoire Interdisciplinaire Récits, Cultures et Sociétés - LIRCES"
+CTEL,424925,60110708,,Sciences de l'homme et Humanités,2022,2016,21,Centre Transdisciplinaire D'épistémologie de la Littérature et des Arts Vivants,1,183657101,201220285B,Actif,UPR,Centre Transdisciplinaire D'épistémologie de la Littérature et des Arts Vivants - CTEL
+I3M,,60110709,Affilié à l'Université de Toulon depuis 2016,,2017,2016,22,"Information Milieux, Médias, Médiations",1,099102609,200415080D,Suppression demandée - En attente,,"Information Milieux, Médias, Médiations - I3M"
+LAPCOS,530129,60110710,,Sciences de l'homme et Humanités,2022,2016,23,"Laboratoire d'Anthropologie et de Psychologie Cliniques, Cognitives et Sociales",1,227478819,201220397Y,Actif,UPR,"Laboratoire d'Anthropologie et de Psychologie Cliniques, Cognitives et Sociales - LAPCOS"
+LAMHESS,54697,60110712,,Sciences de l'homme et Humanités,2022,2016,24,Laboratoire Motricité Humaine Expertise Sport Santé,1,177808659,201220315J,Actif,UPR,Laboratoire Motricité Humaine Expertise Sport Santé - LAMHESS
+CMMC,30708,60110714,,Sciences de l'homme et Humanités,2022,2016,25,Centre de la Méditerranée Moderne et Contemporaine,1,026568810,199213380H,Actif,UPR,Centre de la Méditerranée Moderne et Contemporaine - CMMC
+ISA,1002392,60110715,,Sciences agronomiques et écologiques,2022,2016,26,Institut Sophia Agrobiotech - (ISA),1,170849007,201220409L,Actif,UMR,Institut Sophia Agrobiotech - (ISA) - ISA
+ERMES,,60110716,,Sciences de la société,2022,2016,27,Equipe de Recherche sur les Mutations de I'Europe et de ses Sociétés,1,,,Actif,UPR,Equipe de Recherche sur les Mutations de I'Europe et de ses Sociétés - ERMES
+ECOSEAS,,60110717,,Sciences agronomiques et écologiques,2022,2016,28,Ecology and Conservation Science for Sustainable Seas,1,,,Actif,UMR,Ecology and Conservation Science for Sustainable Seas - ECOSEAS
+I3S,,60110719,,STIC,2022,2016,29,Laboratoire D'informatique Signaux et Systèmes de Sophia-Antipolis,1,,,Actif,UMR,Laboratoire D'informatique Signaux et Systèmes de Sophia-Antipolis - I3S
+GRM,520677,60110721,,Sciences de la société,2022,2016,30,Groupe de Recherche en Management,1,168839318,201220245H,Actif,UPR,Groupe de Recherche en Management - GRM
+INPHYNI,497162,60110740,A disparu de la hiérarchie observée au 2023-03-16,Physique,2022,2016,31,Institut de Physique de Nice,1,223644501,201722398B,Création demandée - En attente,UMR,Institut de Physique de Nice - INPHYNI
+POLYTECH'LAB,537646,60110741,Fusion de EpoC et e-city,STIC,2022,2016,32,Laboratoire Polytech'LAB,1,228311748,,Actif,UPR,Laboratoire Polytech'LAB - POLYTECH'LAB
+ARTEMIS,,60110743,,Science de la terre Univers Espace,2022,2016,33,"Astrophysique Relativiste, Théories, Expériences, Metrologie, Instrumentation, Signaux",2,18467543X,201220434N,Actif,UMR,"Astrophysique Relativiste, Théories, Expériences, Metrologie, Instrumentation, Signaux - ARTEMIS"
+LAGRANGE,,60110744,,Science de la terre Univers Espace,2022,2016,34,Laboratoire Joseph-Louis Lagrange,2,172058155,201220431K,Actif,UMR,Laboratoire Joseph-Louis Lagrange - LAGRANGE
+LEAT,193834,60110755,,STIC,2022,2016,35,"Laboratoire D'électronique, Antennes et Télécommunications",1,06032466X,201220433M,Actif,UMR,"Laboratoire D'électronique, Antennes et Télécommunications - LEAT"
+IBV,182201,60110756,,Biologie Médecine Santé,2022,2016,36,Institut de Biologie Valrose,1,178149357,201220170B,Actif,UMR,Institut de Biologie Valrose - IBV
+CCMA,,60110760,Absent Sinaps,,2022,2016,37,Centre Commun de Microscopie Appliquée,1,,,Actif,,Centre Commun de Microscopie Appliquée - CCMA
+LP2M,201743,60110761,,Biologie Médecine Santé,2022,2016,38,Laboratoire de Physiomédecine Moléculaire,1,186256728,201220337H,Actif,UMR,Laboratoire de Physiomédecine Moléculaire - LP2M
+BCL,60110762,60110762,,Sciences de l'homme et Humanités,2022,2016,39,"Bases, Corpus et Langage",1,200912003,201220287D,Actif,UMR,"Bases, Corpus et Langage - BCL"
+ICN,212876,60110763,,Chimie,2022,2016,40,Institut de Chimie de Nice,1,172175038,201220250N,Actif,UMR,Institut de Chimie de Nice - ICN
+CEPAM,199355,60110764,,Sciences de l'homme et Humanités,2022,2016,41,"Cultures et Envirronements, Préhistoire, Antiquité, Moyen-Age",1,078599725,201220314H,Actif,UMR,"Cultures et Envirronements, Préhistoire, Antiquité, Moyen-Age - CEPAM"
+,,60111234,,,2022,2016,42,Unite de Pharmacogenetique et Radiogenetique des Cancers (CHU),1,,,Actif,,Unite de Pharmacogenetique et Radiogenetique des Cancers (CHU)
+,,60122129,,,2022,2016,43,Villa Arson,3,02643587X,,Actif,,Villa Arson
+N.I.C.E. Lab,,temp_001,Création IMREDD préférée,Chimie,,,44,Nature Inspire Creativity Engineers-Lab  (IMREDD),1,224352008,201622217J,Inactif,URE,Nature Inspire Creativity Engineers-Lab  (IMREDD) - N.I.C.E. Lab
+LINE,,temp_002,Demander création à Scopus,Sciences de l'homme et Humanités,2022,2016,45,Laboratoire d'Innovation et Numérique par l'Éducation,1,,,Création demandée - En attente,URE,Laboratoire d'Innovation et Numérique par l'Éducation - LINE
+EpOC,,temp_003,N'est plus sous tutelle UCA depuis 2018 - N'est plus observé dans la hiérachie au 2023-03-16,,2018,2016,46,Environnements et Paléoenvironnements Océaniques et Continentaux,1,191470287,201320649T,Inactif,,Environnements et Paléoenvironnements Océaniques et Continentaux - EpOC
+MSI,,temp_004,,,,,47,"Center of Modeling, Simulation, and Interactions",1,,,Invalidé en interne,,"Center of Modeling, Simulation, and Interactions - MSI"
+LADIE,,temp_005,,Sciences de la société,2022,2016,48,Laboratoire de Droit International et Européen,1,,,Création demandée - En attente,UPR,Laboratoire de Droit International et Européen - LADIE
+,,60033148,,,2022,2016,49,UNS divers,1,,,Actif,,UNS divers
+3IA,1090027,temp_006,,,,,50,Interdisciplinary Institute for Artificial Intelligence,1,,,Invalidé en interne,,Interdisciplinary Institute for Artificial Intelligence - 3IA
+UR2CA,1048785,temp_007,,Biologie Médecine Santé,2022,2016,51,Unité de Recherche Clinique de la Côte d’Azur,1,,,Création demandée - En attente,UPR,Unité de Recherche Clinique de la Côte d’Azur - UR2CA
+RETINES,1005904,60272134,,Biologie Médecine Santé,2022,2016,52,"Risques, Epidémiologie, Territoires, Informations, Education et Santé",1,,,Actif,URE,"Risques, Epidémiologie, Territoires, Informations, Education et Santé - RETINES"
+MAJULAB,1055092,60204138,Manquant Sinaps,,2022,2016,53,MajuLab,1,,,Actif,,MajuLab - MAJULAB
+LRTO,,temp_008,,Biologie Médecine Santé,,,54,Laboratoire de recherche translationnelle en oncologie,1,,,Invalidé en interne,URE,Laboratoire de recherche translationnelle en oncologie - LRTO
+SICLAB,,temp_009,IMREDD préféré,Sciences de l'homme et Humanités,,,55,Laboratoire des sciences de l'information et de la communication (IMREDD),1,,,Invalidé en interne,UPR,Laboratoire des sciences de l'information et de la communication (IMREDD) - SICLAB
+TNMST,,temp_010,Création IMREDD préférée,Sciences de l'homme et Humanités,,,56,Transitions numériques Média Savoirs et Territoires (IMREDD),1,,,Inactif,URE,Transitions numériques Média Savoirs et Territoires (IMREDD) - TNMST
+CERDP,,temp_011,Pas encore de publis dans Scopus,Sciences de la société,,,57,Centre d'études et de recherche en doit des procédures,1,,,Invalidé en interne,UPR,Centre d'études et de recherche en doit des procédures - CERDP
+CERDACFF,,temp_012,,Sciences de la société,2022,2016,58,"Centre d'études et de recherches en droit administratif, constitutionnel, financier et fiscal",1,,,Création demandée - En attente,UPR,"Centre d'études et de recherches en droit administratif, constitutionnel, financier et fiscal - CERDACFF"
+KTO,,60120596,,Sciences de la société,2022,2016,59,INSTAR and KTO (Skema),1,,,Actif,,INSTAR and KTO (Skema) - KTO
+Lalanne,,temp_013,,Biologie Médecine Santé,2022,2016,60,Fédération Claude Lalanne (CHU),1,,,Création demandée - En attente,FR,Fédération Claude Lalanne (CHU) - Lalanne
+UAR 820,,60204139,,Physique,2022,2016,62,Institut d'Etudes Scientifiques de Cargèse (Univ. Corse),1,,,Actif,UAR,Institut d'Etudes Scientifiques de Cargèse (Univ. Corse) - UAR 820
+IMREDD,,temp_014,,Sciences de l'homme et Humanités,2022,2016,63,"Institut Méditerranéen du Risque, de l’Environnement et du Développement Durable",1,,,Création demandée - En attente,URE,"Institut Méditerranéen du Risque, de l’Environnement et du Développement Durable - IMREDD"

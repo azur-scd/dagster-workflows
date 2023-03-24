@@ -215,7 +215,7 @@ def sqlite_save_process():
     create_theses_fr_table(theses_fr)
 
 @repository
-def prod_bso_theses():
+def bso_theses():
     return [theses_main,sqlite_save_process]
 
 """

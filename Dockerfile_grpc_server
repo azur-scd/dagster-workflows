@@ -1,0 +1,22 @@
+# syntax=docker/dockerfile:1
+FROM python:3.10.10-slim
+
+# Checkout and install dagster libraries needed to run the gRPC server
+# exposing your repository to dagit and dagster-daemon, and to load the DagsterInstance
+RUN pip install --upgrade pip
+RUN pip install dagster dagster-postgres dagster-docker
+
+# Add repository code
+RUN mkdir -p /opt/dagster/app
+WORKDIR /opt/dagster/app
+
+COPY ./app .
+
+# Run dagster gRPC server on port 4000
+
+EXPOSE 4000
+VOLUME ["/opt/dagster/app"]
+
+# CMD allows this to be overridden from run launchers or executors that want
+# to run other commands against your repository
+CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000"]

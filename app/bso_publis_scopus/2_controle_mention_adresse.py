@@ -353,7 +353,7 @@ def save_sqlite():
 
 
 @repository
-def prod_bsi_publis_scopus():
+def bsi_publis_scopus():
     return [main_fuzzy_process,consolidated_data,save_sqlite]
 
 """

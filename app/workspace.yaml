@@ -18,9 +18,12 @@ load_from:
       relative_path: bso_publis_scopus/2_controle_mention_adresse.py
       working_directory: bso_publis_scopus
   - python_file:
-      relative_path: bso_publis_scopus/01_dev.py
+      relative_path: bso_publis_scopus/3_evaluation_apc.py
       working_directory: bso_publis_scopus
   - python_file:
-      relative_path: bso_publis_scopus/00_dev.py
+      relative_path: bso_publis_scopus/01_dev.py
       working_directory: bso_publis_scopus
+#  - python_file:
+#      relative_path: bso_publis_scopus/00_dev.py
+#      working_directory: bso_publis_scopus
   

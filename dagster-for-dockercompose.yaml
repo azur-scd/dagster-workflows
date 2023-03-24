@@ -1,0 +1,53 @@
+scheduler:
+  module: dagster.core.scheduler
+  class: DagsterDaemonScheduler
+
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+
+run_launcher:
+  module: dagster_docker
+  class: DockerRunLauncher
+  config:
+    env_vars:
+      - DAGSTER_PG_USER
+      - DAGSTER_PG_PASSWORD
+      - DAGSTER_PG_DB
+    container_kwargs:
+      volumes:
+        - ./app:/opt/dagster/app
+    network: docker_network
+
+run_storage:
+  module: dagster_postgres.run_storage
+  class: PostgresRunStorage
+  config:
+    postgres_db:
+      hostname: docker_postgres
+      username: postgres
+      password: postgres
+      db_name: dagster-postgres-db
+      port: 5432
+
+schedule_storage:
+  module: dagster_postgres.schedule_storage
+  class: PostgresScheduleStorage
+  config:
+    postgres_db:
+      hostname: docker_postgres
+      username: postgres
+      password: postgres
+      db_name: dagster-postgres-db
+      port: 5432
+
+event_log_storage:
+  module: dagster_postgres.event_log
+  class: PostgresEventLogStorage
+  config:
+    postgres_db:
+      hostname: docker_postgres
+      username: postgres
+      password: postgres
+      db_name: dagster-postgres-db
+      port: 5432

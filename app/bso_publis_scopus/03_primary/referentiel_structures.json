@@ -1,7 +1,7 @@
 [
    {
-      "affiliation_name":"UCA (Université)",
-      "affiliation_id":"0",
+      "affiliation_name":"Université Côte d'Azur",
+      "affiliation_id":"60110693",
       "ppn_valide":"",
       "affcourt_valide":"",
       "RNSR":"",
@@ -14,46 +14,32 @@
       "documents_count":0
    },
    {
-      "affiliation_name":"OCA",
-      "affiliation_id":"0",
-      "ppn_valide":"",
-      "affcourt_valide":"",
+      "affiliation_name":"Observatoire de la Côte d'Azur",
+      "affiliation_id":"60010513",
+      "ppn_valide":"035675683",
+      "affcourt_valide":"Observatoire de la Côte d'Azur",
       "RNSR":"",
-      "VIAF":"",
-      "ISNI":"",
-      "BNF":"",
+      "VIAF":"148948947",
+      "ISNI":"0000000121815557",
+      "BNF":"\/ark:\/12148\/cb133287471",
       "HAL":"",
       "id":2,
-      "parent_id":0,
-      "documents_count":0
+      "parent_id":1,
+      "documents_count":393
    },
    {
       "affiliation_name":"Villa Arson",
-      "affiliation_id":"0",
-      "ppn_valide":"",
-      "affcourt_valide":"",
+      "affiliation_id":"60122129",
+      "ppn_valide":"02643587X",
+      "affcourt_valide":"Villa Arson (Nice)",
       "RNSR":"",
-      "VIAF":"",
-      "ISNI":"",
-      "BNF":"",
+      "VIAF":"136763798",
+      "ISNI":"0000000093163263",
+      "BNF":"\/ark:\/12148\/cb118683836",
       "HAL":"",
       "id":3,
-      "parent_id":0,
-      "documents_count":0
-   },
-   {
-      "affiliation_name":"UCA (affiliation)",
-      "affiliation_id":"60110693",
-      "ppn_valide":"",
-      "affcourt_valide":"",
-      "RNSR":"",
-      "VIAF":"",
-      "ISNI":"",
-      "BNF":"",
-      "HAL":"",
-      "id":4,
       "parent_id":1,
-      "documents_count":4297
+      "documents_count":2
    },
    {
       "affiliation_name":"Institut de Pharmacologie Moléculaire et Cellulaire",
@@ -82,20 +68,6 @@
       "id":6,
       "parent_id":1,
       "documents_count":364
-   },
-   {
-      "affiliation_name":"Observatoire de la Côte d'Azur",
-      "affiliation_id":"60010513",
-      "ppn_valide":"035675683",
-      "affcourt_valide":"Observatoire de la Côte d'Azur",
-      "RNSR":"",
-      "VIAF":"148948947",
-      "ISNI":"0000000121815557",
-      "BNF":"\/ark:\/12148\/cb133287471",
-      "HAL":"",
-      "id":7,
-      "parent_id":2,
-      "documents_count":393
    },
    {
       "affiliation_name":"Le Laboratoire Géoazur",
@@ -586,20 +558,6 @@
       "id":42,
       "parent_id":1,
       "documents_count":19
-   },
-   {
-      "affiliation_name":"Villa Arson",
-      "affiliation_id":"60122129",
-      "ppn_valide":"02643587X",
-      "affcourt_valide":"Villa Arson (Nice)",
-      "RNSR":"",
-      "VIAF":"136763798",
-      "ISNI":"0000000093163263",
-      "BNF":"\/ark:\/12148\/cb118683836",
-      "HAL":"",
-      "id":43,
-      "parent_id":3,
-      "documents_count":2
    },
    {
       "affiliation_name":"NICE Lab, IMREDD",
